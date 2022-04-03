@@ -1,73 +1,56 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
-</p>
+# NestJS Microservice boilerplate
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+TODO
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Configuration
 
-## Description
+The service configuration is handled over YAML and environment variables.
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+In `src/resources`, you'll find a file, `application.yml` which contains the service configuration in YAML format. This file is the **first file loaded by the service.**.
 
-## Installation
+For example, by default the `src/resources/application.yml` contains :
 
-```bash
-$ npm install
+```yaml
+server:
+  port: 8080
 ```
 
-## Running the app
+You can add all the configuration required by your service here. Every key/values will be loaded into your application context.
 
-```bash
-# development
-$ npm run start
+To access a configuration value in your code, you can simply do the following :
 
-# watch mode
-$ npm run start:dev
+```ts
+const config = app.get<ConfigService>(ConfigService);
+const port = config.get<number>('server.port', 3000);
 
-# production mode
-$ npm run start:prod
+console.log(port); // 8080
 ```
 
-## Test
+If you need to define environment specific variables, you can simply create another file, in the following format : `application.${ENVIRONMENT}.yml`. For example, for a `production` environment, you'll create the file `src/resources/application.production.yml` :
 
-```bash
-# unit tests
-$ npm run test
+> By default, the service will assume that your configuration files are located into `resources`. If you're in a Docker container for example, and that your configuration files were copied into `/etc/app/config`, you can simply use the special environment variable `NEST_ADDITIONAL_CONFIG_LOCATION=/etc/app/config` to specify the service to check for configurations into the directory specified.
 
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+```yaml
+# src/resources/application.production.yml
+server:
+  tls: true
 ```
 
-## Support
+```ts
+const config = app.get<ConfigService>(ConfigService);
+const port = config.get<number>('server.port', 3000);
+const useTls = config.get<boolean>('server.tls', false);
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+console.log(port); // 8080
+console.log(useTls); // true
+```
 
-## Stay in touch
+The configuration keys from different sources will be merged at the runtime. So you can define some common configurations into the `application.yml`, and add more environment specific variables into `application.${ENVIRONMENT}.yml`.
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+The last thing about configuration is that everything is overridable by environment. If you wish to override the `server.port` for example, you can simply export the variable `NEST_SERVER_PORT`.
 
-## License
+**Be careful, environment variables take precedence over each other configuration method. You'll find below how the service will load it's configuration :**
 
-Nest is [MIT licensed](LICENSE).
+- `application.yml`
+- `application.${ENVIRONMENT}.yml`
+- Environment variables
