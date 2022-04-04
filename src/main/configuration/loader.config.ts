@@ -34,6 +34,9 @@ function loadConfig(location: string, file: string): Record<string, any> {
   return yaml.load(readFileSync(path, "utf-8"));
 }
 
+export const isLocal =
+  process.env.NEST_PROFILE == "local" || !process.env.NEST_PROFILE;
+
 export default () => {
   let config = {};
 
