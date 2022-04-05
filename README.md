@@ -1,6 +1,29 @@
 # NestJS Microservice boilerplate
 
-TODO
+## Getting started 
+
+In order to run the application: 
+
+```
+npm ci 
+npm run start:dev
+```
+
+You should have the appropriate configuration and services running on your machine 
+in order to ensure the application is launching properly.
+
+## Telemetry 
+
+This application is based on [@opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js/),
+so metrics and traces are generated through it. Moreover, logs (in production
+environment) have fields (`trace.id` and `span.id`) in order to correlate logs 
+with traces. You can find the configuration files for tracing in [`tracing.config.ts`](./src/main/configuration/tracing.config.ts).
+**When forking the boilerplate, you should update [`tracing.config.ts:12`](./src/main/configuration/tracing.config.ts#L12) 
+to match your service.**
+
+Learn more about how you can use spans in your code with [nestjs-otel](https://github.com/pragmaticivan/nestjs-otel). 
+And more globally, to learn about telemetry, see this [CNCF](https://github.com/cncf/tag-observability/blob/main/whitepaper.md)
+article.
 
 ## Configuration
 
