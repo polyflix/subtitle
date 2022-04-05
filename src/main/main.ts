@@ -1,22 +1,27 @@
-import { Logger } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { DevLogger, JsonLogger } from "./configuration/logger.config";
-import { isLocal } from "./configuration/loader.config";
-import otelSDK from "./configuration/tracing.config";
+import { loadConfiguration } from "./configuration/loader.config";
+import { logger } from "./configuration/logger.config";
+import { configureOTel } from "./configuration/tracing.config";
 
 async function bootstrap() {
+  const config = loadConfiguration(logger);
+
   // Must be started before NestFactory
-  await otelSDK.start();
+  const telemetry = configureOTel(config, logger);
+  telemetry.start();
 
-  const app = await NestFactory.create(AppModule, {
-    logger: isLocal ? DevLogger : JsonLogger
+  // Gracefully shutdown OTel data, it ensures that all data
+  // has been dispatched before shutting down the server
+  process.on("SIGTERM", () => {
+    telemetry.shutdown().finally(() => process.exit(0));
   });
-  const config = app.get<ConfigService>(ConfigService);
-  const logger = app.get<Logger>(Logger);
 
-  const port = config.get<number>("server.port", 3000);
+  const app = await NestFactory.create(AppModule.bootstrap({ config }), {
+    logger
+  });
+
+  const port = config["server.port"] || 3000;
 
   await app.listen(port, () => {
     logger.log(`Server listening on port ${port}`, "NestApplication");

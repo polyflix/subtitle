@@ -1,10 +1,10 @@
-import { Logger } from "@nestjs/common";
+import { LoggerService } from "@nestjs/common";
 import { existsSync, readFileSync } from "fs";
 import * as yaml from "js-yaml";
 import * as set from "lodash.set";
 import { join } from "path";
 
-const logger = new Logger("ConfigurationLoader");
+const LOGGER_CTX = "ConfigurationLoader";
 
 // Some constants useful for the ConfigurationLoader
 const CONFIG_ENV_PREFIX = "NEST_";
@@ -26,18 +26,22 @@ function keyToEnv(key: string): string {
   return `${CONFIG_ENV_PREFIX}${key.toUpperCase().replace(".", "_")}`;
 }
 
-function loadConfig(location: string, file: string): Record<string, any> {
+function loadConfig(
+  location: string,
+  file: string,
+  logger: LoggerService
+): Record<string, any> {
   const path = join(location, file);
   // If the path doesn't exists, we skip to the next property source
   if (!existsSync(path)) return {};
-  logger.log(`Adding new PropertySource from file=${file}`);
+  logger.log(`Adding new PropertySource from file=${file}`, LOGGER_CTX);
   return yaml.load(readFileSync(path, "utf-8"));
 }
 
 export const isLocal =
   process.env.NEST_PROFILE == "local" || !process.env.NEST_PROFILE;
 
-export default () => {
+export const loadConfiguration = (logger: LoggerService) => {
   let config = {};
 
   const activeProfile = process.env.NEST_PROFILE || "local";
@@ -46,9 +50,13 @@ export default () => {
     `${CONFIG_COMMON_FILE_NAME}.${activeProfile}.${CONFIG_FILE_EXTENSION}`
   ];
 
-  logger.log(`Bootstrapping application with profile=${activeProfile}`);
   logger.log(
-    `Loading configuration from default location=${CONFIG_DEFAULT_PATH}`
+    `Bootstrapping application with profile=${activeProfile}`,
+    LOGGER_CTX
+  );
+  logger.log(
+    `Loading configuration from default location=${CONFIG_DEFAULT_PATH}`,
+    LOGGER_CTX
   );
 
   // Load configuration from default sources.
@@ -56,7 +64,7 @@ export default () => {
   // application.yml
   // application.${ENVIRONMENT}.yml
   defaultConfigurationFiles.forEach((file) => {
-    config = { ...config, ...loadConfig(CONFIG_DEFAULT_PATH, file) };
+    config = { ...config, ...loadConfig(CONFIG_DEFAULT_PATH, file, logger) };
   });
 
   // If NEST_ADDITIONAL_CONFIG_LOCATION is found in environment
@@ -64,10 +72,11 @@ export default () => {
   const additionalLocation = process.env[RESERVED_ENV_VARS[0]];
   if (additionalLocation) {
     logger.log(
-      `Loading configuration from additional configuration location=${additionalLocation}`
+      `Loading configuration from additional configuration location=${additionalLocation}`,
+      LOGGER_CTX
     );
     defaultConfigurationFiles.forEach((file) => {
-      config = { ...config, ...loadConfig(additionalLocation, file) };
+      config = { ...config, ...loadConfig(additionalLocation, file, logger) };
     });
   }
 
@@ -85,7 +94,8 @@ export default () => {
       logger.log(
         `Setting ${env.key} value from environment variable=${keyToEnv(
           env.key
-        )}`
+        )}`,
+        LOGGER_CTX
       );
       set(config, env.key, env.value);
     });
