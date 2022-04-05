@@ -21,9 +21,13 @@ export const configureOTel = (
   config: Record<string, any>,
   logger: LoggerService
 ) => {
-  const traceEndpoint = `0.0.0.0:${config["telemetry"]["port"] || 4317}`;
+  const otelConfig = {
+    port: config["telemetry"]["port"] || 4317,
+    endpoint: config["telemetry"]["host"] || "localhost",
+  };
+  const traceEndpoint = `${otelConfig.endpoint}:${otelConfig.port}`;
 
-  logger.log(`OTel tracing server listening on ${traceEndpoint}`, LOGGER_CTX);
+  logger.log(`OTel tracing server sending to ${traceEndpoint}`, LOGGER_CTX);
   const otelExporter = new OTLPTraceExporter({
     url: traceEndpoint
   });
