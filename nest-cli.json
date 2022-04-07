@@ -4,6 +4,11 @@
   "entryFile": "main/main",
   "compilerOptions": {
     "webpack": true,
-    "assets": [{ "include": "resources", "watchAssets": true }]
+    "assets": [
+      {
+        "include": "resources",
+        "watchAssets": true
+      }
+    ]
   }
 }

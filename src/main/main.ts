@@ -1,8 +1,9 @@
+import { ValidationPipe } from "@nestjs/common";
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
-import { loadConfiguration } from "./configuration/loader.config";
-import { logger } from "./configuration/logger.config";
-import { configureOTel } from "./configuration/tracing.config";
+import { loadConfiguration } from "./config/loader.config";
+import { logger } from "./config/logger.config";
+import { configureOTel } from "./config/tracing.config";
 
 async function bootstrap() {
   const config = loadConfiguration(logger);
@@ -21,8 +22,9 @@ async function bootstrap() {
     logger
   });
 
-  const port = config["server.port"] || 3000;
+  app.useGlobalPipes(new ValidationPipe());
 
+  const port = config["server"]["port"] || 3000;
   await app.listen(port, () => {
     logger.log(`Server listening on port ${port}`, "NestApplication");
   });
