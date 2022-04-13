@@ -21,10 +21,12 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@nestjs/axios": "0.0.7",
     "@nestjs/common": "^8.0.0",
     "@nestjs/config": "^2.0.0",
     "@nestjs/core": "^8.0.0",
     "@nestjs/platform-express": "^8.0.0",
+    "@nestjs/terminus": "^8.0.6",
     "@opentelemetry/auto-instrumentations-node": "^0.28.0",
     "@opentelemetry/context-async-hooks": "^1.0.1",
     "@opentelemetry/core": "^1.0.1",

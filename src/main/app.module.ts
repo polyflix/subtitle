@@ -1,6 +1,7 @@
 import { DynamicModule, Logger } from "@nestjs/common";
 import { ConfigModule } from "@nestjs/config";
 import { OpenTelemetryModule } from "nestjs-otel";
+import { HealthModule } from "./modules/health/health.module";
 import { TodoModule } from "./modules/todo/infrastructure/todo.module";
 
 interface AppModuleOptions {
@@ -13,6 +14,7 @@ export class AppModule {
       module: AppModule,
       providers: [Logger],
       imports: [
+        HealthModule,
         TodoModule,
         OpenTelemetryModule.forRoot(),
         ConfigModule.forRoot({
