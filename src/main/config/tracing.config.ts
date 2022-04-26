@@ -22,8 +22,8 @@ export const configureOTel = (
   logger: LoggerService
 ) => {
   const otelConfig = {
-    port: config["telemetry"]["port"] || 4317,
-    endpoint: config["telemetry"]["host"] || "localhost",
+    port: config["telemetry"]["port"] || 4317,
+    endpoint: config["telemetry"]["host"] || "localhost"
   };
   const traceEndpoint = `${otelConfig.endpoint}:${otelConfig.port}`;
 

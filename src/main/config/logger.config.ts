@@ -19,8 +19,8 @@ function tracingFormat(): Format {
     const span: Span | undefined = otelTrace.getSpan(context.active());
     if (span) {
       const context = span.spanContext();
-      info["trace.id"] = context.traceId;
-      info["span.id"] = context.spanId;
+      info["trace_id"] = context.traceId;
+      info["span_id"] = context.spanId;
     }
     return info;
   })();
