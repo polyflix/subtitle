@@ -1,0 +1,19 @@
+stages:
+  - static_tests
+  - static_analysis
+  - build
+  - package
+  - release
+  - deploy
+  
+include:
+  - project: 'polyflix-do/ci-templates'
+    file: '/templates/nodejs.yml'
+    ref: main
+  - project: 'polyflix-do/ci-templates'
+    file: '/jobs/nestjs/package.yml'
+    ref: main
+  - project: 'polyflix-do/ci-templates'
+    file: '/jobs/nestjs/test.units.yml'
+    ref: main
+
