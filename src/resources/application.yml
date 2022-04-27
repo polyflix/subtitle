@@ -1,6 +1,16 @@
 server:
-  port: 8080
+  port: 5000
 
 telemetry:
   port: 4317
   host: localhost
+
+kafka:
+  client:
+    clientId: todo-backend
+    brokers:
+      - port: 9092
+        host: localhost
+  consumer:
+    groupId: todo-consumer
+    allowAutoTopicCreation: true

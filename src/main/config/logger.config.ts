@@ -2,7 +2,7 @@ import { context, Span, trace as otelTrace } from "@opentelemetry/api";
 import { Format, format } from "logform";
 import { WinstonModule } from "nest-winston";
 import * as winston from "winston";
-import { isLocal } from "./loader.config";
+import { ISLOCAL } from "./loader.config";
 
 /**
  * Instrumentation packages for winston aren't that great for now and
@@ -52,4 +52,4 @@ const DevLogger = WinstonModule.createLogger({
   ]
 });
 
-export const logger = isLocal ? DevLogger : JsonLogger;
+export const logger = ISLOCAL ? DevLogger : JsonLogger;

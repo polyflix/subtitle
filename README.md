@@ -1,27 +1,27 @@
 # NestJS Microservice boilerplate
 
-## Getting started 
+## Getting started
 
-In order to run the application: 
+In order to run the application:
 
 ```
-npm ci 
+npm ci
 npm run start:dev
 ```
 
-You should have the appropriate configuration and services running on your machine 
+You should have the appropriate configuration and services running on your machine
 in order to ensure the application is launching properly.
 
-## Telemetry 
+## Telemetry
 
 This application is based on [@opentelemetry-js](https://github.com/open-telemetry/opentelemetry-js/),
 so metrics and traces are generated through it. Moreover, logs (in production
-environment) have fields (`trace.id` and `span.id`) in order to correlate logs 
+environment) have fields (`trace.id` and `span.id`) in order to correlate logs
 with traces. You can find the configuration files for tracing in [`tracing.config.ts`](./src/main/configuration/tracing.config.ts).
-**When forking the boilerplate, you should update [`tracing.config.ts:12`](./src/main/configuration/tracing.config.ts#L12) 
+**When forking the boilerplate, you should update [`tracing.config.ts:12`](./src/main/configuration/tracing.config.ts#L12)
 to match your service.**
 
-Learn more about how you can use spans in your code with [nestjs-otel](https://github.com/pragmaticivan/nestjs-otel). 
+Learn more about how you can use spans in your code with [nestjs-otel](https://github.com/pragmaticivan/nestjs-otel).
 And more globally, to learn about telemetry, see this [CNCF](https://github.com/cncf/tag-observability/blob/main/whitepaper.md)
 article.
 
@@ -44,7 +44,7 @@ To access a configuration value in your code, you can simply do the following :
 
 ```ts
 const config = app.get<ConfigService>(ConfigService);
-const port = config.get<number>('server.port', 3000);
+const port = config.get<number>("server.port", 3000);
 
 console.log(port); // 8080
 ```
@@ -61,8 +61,8 @@ server:
 
 ```ts
 const config = app.get<ConfigService>(ConfigService);
-const port = config.get<number>('server.port', 3000);
-const useTls = config.get<boolean>('server.tls', false);
+const port = config.get<number>("server.port", 3000);
+const useTls = config.get<boolean>("server.tls", false);
 
 console.log(port); // 8080
 console.log(useTls); // true
@@ -77,3 +77,40 @@ The last thing about configuration is that everything is overridable by environm
 - `application.yml`
 - `application.${ENVIRONMENT}.yml`
 - Environment variables
+
+## Kafka
+
+Official documentation: https://docs.nestjs.com/microservices/kafka
+
+If you need to use Kafka, you must inject the client in your class.
+
+```ts
+  constructor(
+    @InjectKafkaClient() private readonly client: ClientKafka
+  ) {}
+```
+
+You can use the `@Expose()` decorator to set only a specific property to be sent to the topic.
+In the example below, only the id and title will be sent to the topic.
+
+```ts
+export class Foo {
+  @Expose()
+  id: string;
+
+  @Expose()
+  title: string;
+
+  views: string;
+}
+```
+
+In order to use the `@Expose()` decorator, you must use the `KafkaEventBuilder`.
+
+```ts
+const message = new KafkaEventBuilder(id, element)
+  .withTrigger(TriggerType.CREATE)
+  .build();
+
+this.kafkaClient.emit(FOO_TOPICS, message);
+```

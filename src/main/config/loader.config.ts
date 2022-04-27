@@ -38,7 +38,7 @@ function loadConfig(
   return yaml.load(readFileSync(path, "utf-8"));
 }
 
-export const isLocal =
+export const ISLOCAL =
   process.env.NEST_PROFILE == "local" || !process.env.NEST_PROFILE;
 
 export const loadConfiguration = (logger: LoggerService) => {

@@ -1,9 +1,11 @@
 import { Controller, Get, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
+import { Transport } from "@nestjs/microservices";
 import {
   HealthCheck,
   HealthCheckService,
-  HttpHealthIndicator
+  HttpHealthIndicator,
+  MicroserviceHealthIndicator
 } from "@nestjs/terminus";
 
 /**
