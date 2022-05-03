@@ -8,9 +8,7 @@ telemetry:
 kafka:
   client:
     clientId: todo-backend
-    brokers:
-      - port: 9092
-        host: localhost
+    brokers: localhost:9092
   consumer:
     groupId: todo-consumer
     allowAutoTopicCreation: true
