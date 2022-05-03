@@ -19,11 +19,11 @@ const RESERVED_ENV_VARS = [
 ];
 
 function envToKey(key: string): string {
-  return key.replace(CONFIG_ENV_PREFIX, "").toLowerCase().replace("_", ".");
+  return key.replace(CONFIG_ENV_PREFIX, "").toLowerCase().replace(/_/g, ".");
 }
 
 function keyToEnv(key: string): string {
-  return `${CONFIG_ENV_PREFIX}${key.toUpperCase().replace(".", "_")}`;
+  return `${CONFIG_ENV_PREFIX}${key.toUpperCase().replace(/\./g, "_")}`;
 }
 
 function loadConfig(
