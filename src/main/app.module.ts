@@ -1,10 +1,12 @@
 import { DynamicModule, Logger } from "@nestjs/common";
-import { ConfigModule } from "@nestjs/config";
+import { ConfigModule, ConfigService } from "@nestjs/config";
 import { OpenTelemetryModule } from "nestjs-otel";
 import { AppService } from "./app.service";
 import { HealthModule } from "./core/health/health.module";
 import { KafkaModule } from "./core/kafka/kafka.module";
 import { TodoModule } from "./modules/todo/infrastructure/todo.module";
+import { TypeOrmModule } from "@nestjs/typeorm";
+import { configureTypeORM } from "./config/database.config";
 
 interface AppModuleOptions {
   config?: Record<string, any>;
@@ -23,6 +25,11 @@ export class AppModule {
         ConfigModule.forRoot({
           isGlobal: true,
           load: [() => options?.config || {}]
+        }),
+        TypeOrmModule.forRootAsync({
+          inject: [ConfigService],
+          imports: [ConfigModule],
+          useFactory: configureTypeORM
         })
       ]
     };

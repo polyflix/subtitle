@@ -7,8 +7,19 @@ telemetry:
 
 kafka:
   client:
-    clientId: todo-backend
+    clientId: subtitle-client
     brokers: localhost:9092
   consumer:
-    groupId: todo-consumer
+    groupId: subtitle-consumer
     allowAutoTopicCreation: true
+
+database:
+  psql:
+    # In case you want to use an URL instead
+    # url: postgres://sa_video:sa_video_pwd@localhost:5433/video
+    host: localhost
+    port: 5433
+    username: sa_subtitle
+    password: sa_subtitle_pwd
+    database: subtitle
+    debug: true

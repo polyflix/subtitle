@@ -1,5 +1,10 @@
 import { Controller, Get } from "@nestjs/common";
-import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
+import {
+  HealthCheck,
+  HealthCheckService,
+  TypeOrmHealthIndicator
+} from "@nestjs/terminus";
+import { ConfigService } from "@nestjs/config";
 
 /**
  * Export service readiness/liveness
@@ -7,11 +12,28 @@ import { HealthCheck, HealthCheckService } from "@nestjs/terminus";
  */
 @Controller("health")
 export class HealthController {
-  constructor(private health: HealthCheckService) {}
+    #databaseName = "subtitle"
+  constructor(
+    private health: HealthCheckService,
+    private db: TypeOrmHealthIndicator,
+    private configService: ConfigService
+  ) {
+      const dbName: string = this.configService.get<string>(
+          "database.psql.database"
+      );
+
+      if (dbName && dbName !== "") {
+          this.#databaseName = dbName
+      }
+
+
+
+  }
 
   @Get()
   @HealthCheck()
   check() {
-    return this.health.check([]);
+
+      return this.health.check([() => this.db.pingCheck(this.#databaseName)]);
   }
 }

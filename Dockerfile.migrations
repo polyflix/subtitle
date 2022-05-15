@@ -1,0 +1,3 @@
+FROM gitlab.polytech.umontpellier.fr:5050/polyflix-do/docker-images/psql-migration:latest
+
+COPY ./dist/resources/migrations migrations
