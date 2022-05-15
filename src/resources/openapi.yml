@@ -1,8 +1,8 @@
 openapi: "3.0.2"
 info:
-  title: TODO OpenAPI
+  title: Subtitles OpenAPI
   version: "2.0.0"
-  description: Description of the HTTP endpoints of the Polyflix TODO service
+  description: Description of the HTTP endpoints of the Polyflix Subtitle service
 servers:
   - url: "http://{server}/v{version}"
     description: Local
