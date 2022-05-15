@@ -32,3 +32,6 @@ minio:
   credentials:
     access: minio
     secret: minio123
+
+google:
+
