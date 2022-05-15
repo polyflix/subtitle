@@ -14,42 +14,44 @@ import { ISLOCAL } from "./loader.config";
  * environments.
  */
 function tracingFormat(): Format {
-  const tracer = otelTrace.getTracer("logform");
-  return format((info) => {
-    const span: Span | undefined = otelTrace.getSpan(context.active());
-    if (span) {
-      const context = span.spanContext();
-      info["trace_id"] = context.traceId;
-      info["span_id"] = context.spanId;
-    }
-    return info;
-  })();
+    const tracer = otelTrace.getTracer("logform");
+    return format((info) => {
+        const span: Span | undefined = otelTrace.getSpan(context.active());
+        if (span) {
+            const context = span.spanContext();
+            info["trace_id"] = context.traceId;
+            info["span_id"] = context.spanId;
+        }
+        return info;
+    })();
 }
 
 const JsonLogger = WinstonModule.createLogger({
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        tracingFormat(),
-        winston.format.timestamp(),
-        winston.format.json()
-      )
-    })
-  ]
+    transports: [
+        new winston.transports.Console({
+            format: winston.format.combine(
+                tracingFormat(),
+                winston.format.timestamp(),
+                winston.format.json()
+            )
+        })
+    ]
 });
 
 const DevLogger = WinstonModule.createLogger({
-  transports: [
-    new winston.transports.Console({
-      format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp(),
-        winston.format.printf(({ level, message, timestamp, context }) => {
-          return `${timestamp} ${level} [${context}]: ${message}`;
+    transports: [
+        new winston.transports.Console({
+            format: winston.format.combine(
+                winston.format.colorize(),
+                winston.format.timestamp(),
+                winston.format.printf(
+                    ({ level, message, timestamp, context }) => {
+                        return `${timestamp} ${level} [${context}]: ${message}`;
+                    }
+                )
+            )
         })
-      )
-    })
-  ]
+    ]
 });
 
 export const logger = ISLOCAL ? DevLogger : JsonLogger;

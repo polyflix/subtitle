@@ -5,10 +5,10 @@ import { TodoController } from "./controllers/todo.controller";
 import { TodoService } from "./services/todo.service";
 
 @Module({
-  controllers: [TodoController],
-  providers: [
-    { provide: TodoRepository, useClass: InMemoryTodoRepository },
-    TodoService
-  ]
+    controllers: [TodoController],
+    providers: [
+        { provide: TodoRepository, useClass: InMemoryTodoRepository },
+        TodoService
+    ]
 })
 export class TodoModule {}

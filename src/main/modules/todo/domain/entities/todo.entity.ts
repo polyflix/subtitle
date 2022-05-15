@@ -3,55 +3,57 @@ import { TodoAlreadyCompletedError } from "../errors/todo-already-completed.erro
 import { TodoInvalidError } from "../errors/todo-invalid.error";
 
 export interface CreateTodoProps {
-  title: string;
-  description: string;
+    title: string;
+    description: string;
 }
 
 export class Todo {
-  private constructor(
-    private readonly id: string,
-    private title: string,
-    private description: string,
-    private completed: boolean
-  ) {}
+    private constructor(
+        private readonly id: string,
+        private title: string,
+        private description: string,
+        private completed: boolean
+    ) {}
 
-  static create(props: CreateTodoProps): Todo {
-    const todo = new Todo(uuid(), props.title, props.description, false);
-    if (!todo.validate()) {
-      throw new TodoInvalidError();
+    static create(props: CreateTodoProps): Todo {
+        const todo = new Todo(uuid(), props.title, props.description, false);
+        if (!todo.validate()) {
+            throw new TodoInvalidError();
+        }
+        return todo;
     }
-    return todo;
-  }
 
-  validate(): boolean {
-    // Here add some logic to validate the domain entity is valid
-    // A todo is valid only if the title is not empty and the todo is not completed at the creation
-    return this.getTitle() !== "" && !!this.getTitle() && !this.isCompleted();
-  }
-
-  /**
-   * Complete the todo.
-   */
-  complete() {
-    if (this.completed) {
-      throw new TodoAlreadyCompletedError(this);
+    validate(): boolean {
+        // Here add some logic to validate the domain entity is valid
+        // A todo is valid only if the title is not empty and the todo is not completed at the creation
+        return (
+            this.getTitle() !== "" && !!this.getTitle() && !this.isCompleted()
+        );
     }
-    this.completed = true;
-  }
 
-  getId() {
-    return this.id;
-  }
+    /**
+     * Complete the todo.
+     */
+    complete() {
+        if (this.completed) {
+            throw new TodoAlreadyCompletedError(this);
+        }
+        this.completed = true;
+    }
 
-  getTitle() {
-    return this.title;
-  }
+    getId() {
+        return this.id;
+    }
 
-  getDescription() {
-    return this.description;
-  }
+    getTitle() {
+        return this.title;
+    }
 
-  isCompleted(): boolean {
-    return this.completed;
-  }
+    getDescription() {
+        return this.description;
+    }
+
+    isCompleted(): boolean {
+        return this.completed;
+    }
 }

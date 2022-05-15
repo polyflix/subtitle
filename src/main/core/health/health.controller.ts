@@ -1,8 +1,8 @@
 import { Controller, Get } from "@nestjs/common";
 import {
-  HealthCheck,
-  HealthCheckService,
-  TypeOrmHealthIndicator
+    HealthCheck,
+    HealthCheckService,
+    TypeOrmHealthIndicator
 } from "@nestjs/terminus";
 import { ConfigService } from "@nestjs/config";
 
@@ -12,28 +12,24 @@ import { ConfigService } from "@nestjs/config";
  */
 @Controller("health")
 export class HealthController {
-    #databaseName = "subtitle"
-  constructor(
-    private health: HealthCheckService,
-    private db: TypeOrmHealthIndicator,
-    private configService: ConfigService
-  ) {
-      const dbName: string = this.configService.get<string>(
-          "database.psql.database"
-      );
+    #databaseName = "subtitle";
+    constructor(
+        private health: HealthCheckService,
+        private db: TypeOrmHealthIndicator,
+        private configService: ConfigService
+    ) {
+        const dbName: string = this.configService.get<string>(
+            "database.psql.database"
+        );
 
-      if (dbName && dbName !== "") {
-          this.#databaseName = dbName
-      }
+        if (dbName && dbName !== "") {
+            this.#databaseName = dbName;
+        }
+    }
 
-
-
-  }
-
-  @Get()
-  @HealthCheck()
-  check() {
-
-      return this.health.check([() => this.db.pingCheck(this.#databaseName)]);
-  }
+    @Get()
+    @HealthCheck()
+    check() {
+        return this.health.check([() => this.db.pingCheck(this.#databaseName)]);
+    }
 }
