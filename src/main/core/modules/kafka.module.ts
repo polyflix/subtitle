@@ -10,7 +10,7 @@ import { KAFKA_CLIENT, microserviceConfig } from "src/main/config/kafka.config";
             provide: KAFKA_CLIENT,
             useFactory: (configService: ConfigService) => {
                 return ClientProxyFactory.create(
-                    microserviceConfig(configService.get("modules"))
+                    microserviceConfig(configService.get("kafka"))
                 );
             },
             inject: [ConfigService]
