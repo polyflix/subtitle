@@ -23,3 +23,12 @@ database:
     password: sa_subtitle_pwd
     database: subtitle
     debug: true
+
+minio:
+  host: localhost
+  port: 9000
+  # HTTPS or HTTP protocol
+  ssl: false
+  credentials:
+    access: minio
+    secret: minio123
