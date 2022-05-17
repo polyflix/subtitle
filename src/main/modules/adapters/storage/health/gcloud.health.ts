@@ -6,6 +6,7 @@ import {
 } from "@nestjs/terminus";
 import { ConfigService } from "@nestjs/config";
 import { Storage } from "@google-cloud/storage";
+import { gcloudConfig } from "../../../../config/google.config";
 
 @Injectable()
 export class GCloudHealthIndicator extends HealthIndicator {
@@ -17,13 +18,7 @@ export class GCloudHealthIndicator extends HealthIndicator {
 
     constructor(private readonly cfg: ConfigService) {
         super();
-        this.storage = new Storage({
-            projectId: cfg.get("storage.google.project.id"),
-            credentials: {
-                client_email: cfg.get("storage.google.client.email"),
-                private_key: cfg.get("storage.google.project.key")
-            }
-        });
+        this.storage = new Storage(gcloudConfig(cfg));
         this.bucket = cfg.get("storage.google.project.bucket");
     }
 
@@ -37,8 +32,7 @@ export class GCloudHealthIndicator extends HealthIndicator {
             }
         } catch (e) {
             this.logger.error(
-                "Failed to healthcheck google bucket, reason: " +
-                e
+                "Failed to healthcheck google bucket, reason: " + e
             );
             throw new HealthCheckError("GCloud check failed", e);
         }
