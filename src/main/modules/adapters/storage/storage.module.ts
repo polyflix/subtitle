@@ -1,7 +1,8 @@
 import { Global, Module } from "@nestjs/common";
+import { GoogleCloudStoragePersistence } from "./GoogleCloudPersistence";
 import { MinioModule } from "@svtslv/nestjs-minio";
 import { ConfigModule, ConfigService } from "@nestjs/config";
-import { configureMinio } from "../../config/minio.config";
+import { configureMinio } from "../../../config/minio.config";
 
 @Global()
 @Module({
@@ -11,6 +12,8 @@ import { configureMinio } from "../../config/minio.config";
             imports: [ConfigModule],
             useFactory: configureMinio
         })
-    ]
+    ],
+    providers: [GoogleCloudStoragePersistence],
+    exports: [GoogleCloudStoragePersistence]
 })
-export class MinioConfigModule {}
+export class StorageModule {}

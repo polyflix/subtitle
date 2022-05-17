@@ -1,6 +1,11 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { HealthIndicator, HealthIndicatorResult } from "@nestjs/terminus";
+import {
+    HealthCheckError,
+    HealthIndicator,
+    HealthIndicatorResult
+} from "@nestjs/terminus";
 import { InjectMinioClient, MinioClient } from "@svtslv/nestjs-minio";
+import { mergeScan } from "rxjs";
 
 @Injectable()
 export class MinioHealthIndicator extends HealthIndicator {
@@ -16,7 +21,7 @@ export class MinioHealthIndicator extends HealthIndicator {
 
         // We fail to connect
         if (connectivityCheck) {
-            return this.getStatus(this.key, false, {
+            throw new HealthCheckError("Minio check failed", {
                 message: connectivityCheck
             });
         }
@@ -32,7 +37,7 @@ export class MinioHealthIndicator extends HealthIndicator {
             const exists = await this.client.bucketExists(e);
 
             if (!exists) {
-                return this.getStatus(this.key, false, {
+                throw new HealthCheckError("Minio check failed", {
                     message: "Bucket " + e + " does not exist on minio server"
                 });
             }

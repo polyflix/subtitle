@@ -5,7 +5,8 @@ import {
     TypeOrmHealthIndicator
 } from "@nestjs/terminus";
 import { ConfigService } from "@nestjs/config";
-import { MinioHealthIndicator } from "./minio/minio.health";
+import { MinioHealthIndicator } from "../../modules/adapters/storage/health/minio.health";
+import { GCloudHealthIndicator } from "../../modules/adapters/storage/health/gcloud.health";
 
 /**
  * Export service readiness/liveness
@@ -18,6 +19,7 @@ export class HealthController {
         private health: HealthCheckService,
         private db: TypeOrmHealthIndicator,
         private minio: MinioHealthIndicator,
+        private gcloud: GCloudHealthIndicator,
         private configService: ConfigService
     ) {
         const dbName: string = this.configService.get<string>(
@@ -34,7 +36,8 @@ export class HealthController {
     check() {
         return this.health.check([
             () => this.db.pingCheck(this.#databaseName),
-            () => this.minio.isHealthy(["videos", "subtitles"])
+            () => this.minio.isHealthy(["videos", "subtitles"]),
+            () => this.gcloud.isHealthy()
         ]);
     }
 }

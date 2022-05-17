@@ -24,14 +24,28 @@ database:
     database: subtitle
     debug: true
 
-minio:
-  host: localhost
-  port: 9000
-  # HTTPS or HTTP protocol
-  ssl: false
-  credentials:
-    access: minio
-    secret: minio123
 
-google:
+
+storage:
+  minio:
+    host: localhost
+    port: 9000
+    # HTTPS or HTTP protocol
+    ssl: false
+    credentials:
+      access: minio
+      secret: minio123
+  google:
+    project:
+      # Project ID
+      id: "polyflix-tad"
+      # Private key
+      # This private key should be scoped only in reading / writing into a SPECIFIC bucket
+      # This private key should also be hidden
+      key: "REPLACE_ME"
+      # Bucket used
+      bucket: "polytech-gitlab-runners-cache"
+    client:
+      # Service account email
+      email: "test-polyflix@polyflix-tad.iam.gserviceaccount.com"
 

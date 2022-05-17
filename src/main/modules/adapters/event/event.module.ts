@@ -1,7 +1,7 @@
 import { Global, Module } from "@nestjs/common";
+import { KAFKA_CLIENT, microserviceConfig } from "../../../config/kafka.config";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxyFactory } from "@nestjs/microservices";
-import { KAFKA_CLIENT, microserviceConfig } from "src/main/config/kafka.config";
 
 @Global()
 @Module({
@@ -19,4 +19,4 @@ import { KAFKA_CLIENT, microserviceConfig } from "src/main/config/kafka.config";
 
     exports: [KAFKA_CLIENT]
 })
-export class KafkaModule {}
+export class EventModule {}

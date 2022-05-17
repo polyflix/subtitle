@@ -3,11 +3,10 @@ import { ConfigModule, ConfigService } from "@nestjs/config";
 import { OpenTelemetryModule } from "nestjs-otel";
 import { AppService } from "./app.service";
 import { HealthModule } from "./core/health/health.module";
-import { KafkaModule } from "./core/modules/kafka.module";
 import { TodoModule } from "./modules/todo/infrastructure/todo.module";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { configureTypeORM } from "./config/database.config";
-import { MinioConfigModule } from "./core/modules/minio.module";
+import { DatabaseModule } from "./modules/adapters/database/database.module";
+import { StorageModule } from "./modules/adapters/storage/storage.module";
+import { EventModule } from "./modules/adapters/event/event.module";
 
 interface AppModuleOptions {
     config?: Record<string, any>;
@@ -19,7 +18,6 @@ export class AppModule {
             module: AppModule,
             providers: [Logger, AppService],
             imports: [
-                KafkaModule,
                 HealthModule,
                 TodoModule,
                 OpenTelemetryModule.forRoot(),
@@ -27,12 +25,9 @@ export class AppModule {
                     isGlobal: true,
                     load: [() => options?.config || {}]
                 }),
-                TypeOrmModule.forRootAsync({
-                    inject: [ConfigService],
-                    imports: [ConfigModule],
-                    useFactory: configureTypeORM
-                }),
-                MinioConfigModule
+                DatabaseModule,
+                StorageModule,
+                EventModule
             ]
         };
     }
