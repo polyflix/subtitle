@@ -37,7 +37,7 @@ export class GCloudHealthIndicator extends HealthIndicator {
             }
         } catch (e) {
             this.logger.error(
-                "Failed to healthcheck google bucket, reason: ",
+                "Failed to healthcheck google bucket, reason: " +
                 e
             );
             throw new HealthCheckError("GCloud check failed", e);

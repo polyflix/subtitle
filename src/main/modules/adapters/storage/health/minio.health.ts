@@ -50,7 +50,7 @@ export class MinioHealthIndicator extends HealthIndicator {
             await this.client.listBuckets();
             return null;
         } catch (e) {
-            this.logger.error("Could not connect to MinIO, reason: ", e);
+            this.logger.error("Could not connect to MinIO, reason: " + e);
             return e;
         }
     }
