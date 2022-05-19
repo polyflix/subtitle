@@ -15,7 +15,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         const config = gcloudConfig(this.configService);
         this.#client = new Storage(config);
         this.#bucket = this.#client.bucket(
-            this.configService.get("storage.google.bucket")
+            this.configService.get("storage.google.project.bucket")
         );
     }
 

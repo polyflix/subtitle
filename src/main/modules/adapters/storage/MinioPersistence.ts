@@ -21,8 +21,6 @@ type StorageFileFormat = Readable | Buffer | string;
 
 @Injectable()
 export class MinioStoragePersistence extends VTTStorageProvider {
-    private logger = new Logger(MinioStoragePersistence.name);
-
     constructor(
         @InjectMinioClient() private readonly client: MinioClient,
         private readonly configService: ConfigService
