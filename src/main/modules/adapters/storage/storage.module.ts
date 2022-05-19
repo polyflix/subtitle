@@ -3,6 +3,9 @@ import { GoogleCloudStoragePersistence } from "./GoogleCloudPersistence";
 import { MinioModule } from "@svtslv/nestjs-minio";
 import { ConfigModule, ConfigService } from "@nestjs/config";
 import { configureMinio } from "../../../config/minio.config";
+import { MinioStoragePersistence } from "./MinioPersistence";
+import { VTTStorageProvider } from "../../domain/ports/VTTStorageProvider";
+import { TextToSpeechProvider } from "../../domain/ports/TextToSpeechProvider";
 
 @Global()
 @Module({
@@ -13,7 +16,16 @@ import { configureMinio } from "../../../config/minio.config";
             useFactory: configureMinio
         })
     ],
-    providers: [GoogleCloudStoragePersistence],
-    exports: [GoogleCloudStoragePersistence]
+    providers: [
+        {
+            provide: VTTStorageProvider,
+            useClass: MinioStoragePersistence
+        },
+        {
+            provide: TextToSpeechProvider,
+            useClass: GoogleCloudStoragePersistence
+        }
+    ],
+    exports: [VTTStorageProvider, TextToSpeechProvider]
 })
 export class StorageModule {}
