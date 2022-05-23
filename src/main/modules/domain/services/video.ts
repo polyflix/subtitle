@@ -3,8 +3,6 @@ import { Logger } from "@nestjs/common";
 export class VideoService {
     private readonly logger = new Logger(this.constructor.name);
 
-    constructor() {}
-
     /**
      * Download a video from VTTStorageProvider
      * @param TODO

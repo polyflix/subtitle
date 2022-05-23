@@ -8,6 +8,7 @@ import { AppModule } from "./app.module";
 import { loadConfiguration } from "./config/loader.config";
 import { logger } from "./config/logger.config";
 import { configureOTel } from "./config/tracing.config";
+import { kafkaConfig } from "@polyflix/x-utils";
 
 export const API_VERSION = "2.0.0";
 
@@ -33,6 +34,7 @@ async function bootstrap() {
         defaultVersion: API_VERSION
     });
 
+    app.connectMicroservice(kafkaConfig(config["kafka"]));
     await app.startAllMicroservices();
 
     app.useGlobalPipes(new ValidationPipe());

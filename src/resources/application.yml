@@ -6,6 +6,8 @@ telemetry:
   host: localhost
 
 kafka:
+  topics:
+    subtitle: polyflix.subtitle
   client:
     clientId: subtitle-client
     brokers: localhost:9092

@@ -6,7 +6,7 @@ import {
 } from "@nestjs/common";
 import { ClientProxy } from "@nestjs/microservices";
 import { ISLOCAL } from "./config/loader.config";
-import { InjectKafkaClient } from "./core/decorators/kafka-inject.decorator";
+import { InjectKafkaClient } from "@polyflix/x-utils";
 
 @Injectable()
 export class AppService
