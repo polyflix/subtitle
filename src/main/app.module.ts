@@ -7,6 +7,8 @@ import { TodoModule } from "./modules/todo/infrastructure/todo.module";
 import { DatabaseModule } from "./modules/adapters/database/database.module";
 import { StorageModule } from "./modules/adapters/storage/storage.module";
 import { EventModule } from "./modules/adapters/event/event.module";
+import { ApiModule } from "./modules/adapters/api/api.module";
+import { DomainServicesModule } from "./modules/domain/services/domain-services.module";
 
 interface AppModuleOptions {
     config?: Record<string, any>;
@@ -27,7 +29,9 @@ export class AppModule {
                 }),
                 DatabaseModule,
                 StorageModule,
-                EventModule
+                EventModule,
+                ApiModule,
+                DomainServicesModule
             ]
         };
     }

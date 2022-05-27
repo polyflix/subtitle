@@ -10,7 +10,7 @@ kafka:
     subtitle: polyflix.subtitle
   client:
     clientId: subtitle-client
-    brokers: localhost:9092
+    brokers: localhost:29092
   consumer:
     groupId: subtitle-consumer
     allowAutoTopicCreation: true

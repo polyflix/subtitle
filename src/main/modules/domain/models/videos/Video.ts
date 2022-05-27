@@ -2,6 +2,8 @@ import { Logger } from "@nestjs/common";
 import * as Path from "path";
 import { mkdirSync } from "fs";
 
+export type VideoSlug = string;
+
 export class Video {
     protected readonly logger = new Logger(Video.name);
     private readonly WORKING_DIR = "/tmp/subtitle-generator/";
@@ -13,7 +15,7 @@ export class Video {
      * @param source -- Video URL to VTTStorage
      */
     constructor(
-        public readonly slug: string,
+        public readonly slug: VideoSlug,
         public readonly title: string,
         public readonly source: string
     ) {

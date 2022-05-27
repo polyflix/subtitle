@@ -2,9 +2,9 @@ import { Global, Module } from "@nestjs/common";
 import { KAFKA_CLIENT, microserviceConfig } from "../../../config/kafka.config";
 import { ConfigService } from "@nestjs/config";
 import { ClientProxyFactory } from "@nestjs/microservices";
-import { SubtitlePublisher } from "../../domain/ports/subtitlePublisher";
 import { KafkaSubtitlePublisher } from "./kafka-subtitlePublisher";
-import { KafkaSubtitleConsumer } from "./kafka-subtitleConsumer";
+import { KafkaVideoConsumer } from "./kafka-video-consumer";
+import { SubtitlePublisher } from "../../domain/ports/SubtitlePublisher";
 
 @Global()
 @Module({
@@ -28,7 +28,7 @@ import { KafkaSubtitleConsumer } from "./kafka-subtitleConsumer";
             useClass: KafkaSubtitlePublisher
         }
     ],
-    controllers: [KafkaSubtitleConsumer],
+    controllers: [KafkaVideoConsumer],
     exports: [KAFKA_CLIENT]
 })
 export class EventModule {}

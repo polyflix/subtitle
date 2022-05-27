@@ -1,5 +1,6 @@
-import { Logger } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 
+@Injectable()
 export abstract class TextToSpeechProvider {
     protected logger = new Logger(this.constructor.name);
     /**

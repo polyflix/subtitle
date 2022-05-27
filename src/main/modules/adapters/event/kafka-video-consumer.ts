@@ -6,7 +6,7 @@ import { VideoMessage } from "../../application/messages/video-message";
 import { VideoMessageValidationPipe } from "../../application/pipes/VideoMessageValidationPipe";
 
 @Controller()
-export class KafkaSubtitleConsumer {
+export class KafkaVideoConsumer {
     private static VIDEO_TOPIC_CONSUMER = "polyflix.video";
     private static SUBTITLE_TOPIC_PRODUCER = "polyflix.subtitle";
 
@@ -21,12 +21,12 @@ export class KafkaSubtitleConsumer {
                 "Config key kafka.topics.subtitle was not configured, exiting"
             );
         }
-        KafkaSubtitleConsumer.SUBTITLE_TOPIC_PRODUCER = this.configService.get(
+        KafkaVideoConsumer.SUBTITLE_TOPIC_PRODUCER = this.configService.get(
             "kafka.topics.subtitle"
         );
     }
 
-    @EventPattern(KafkaSubtitleConsumer.VIDEO_TOPIC_CONSUMER)
+    @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
     newVideoEvent(
         @Payload("value", new VideoMessageValidationPipe())
         payload: VideoMessage
