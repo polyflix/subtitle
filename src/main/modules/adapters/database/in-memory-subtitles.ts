@@ -27,6 +27,12 @@ export class InMemorySubtitles extends SubtitleRepository {
         return Array.getBy(this.#subtitles, predicate);
     }
 
+    private searchManyWithVideoSlug(videoSlug: VideoSlug): Subtitle[] {
+        const predicate = (subtitle: Subtitle) =>
+            subtitle.video.slug === videoSlug;
+        return this.#subtitles.filter(predicate);
+    }
+
     private searchIndexWithSubtitleId(subtitleId: SubtitleId): Option<number> {
         const predicate = (subtitle) => subtitle.id === subtitleId;
         return Array.getIndexBy(this.#subtitles, predicate);
@@ -63,5 +69,9 @@ export class InMemorySubtitles extends SubtitleRepository {
                 ? this.addToSubtitle(subtitle)
                 : this.updateSubtitle(found_subtitle.value, subtitle)
         );
+    }
+
+    getVideoSubtitles(videoSlug: VideoSlug): Promise<Subtitle[]> {
+        return Promise.resolve(this.searchManyWithVideoSlug(videoSlug));
     }
 }

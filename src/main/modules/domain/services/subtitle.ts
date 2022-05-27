@@ -22,6 +22,12 @@ export class SubtitleService {
         }
     }
 
+    private async getManyByVideoSlug(
+        videoSlug: VideoSlug
+    ): Promise<Subtitle[]> {
+        return this.subtitles.getVideoSubtitles(videoSlug);
+    }
+
     private async getSubtitle({
         videoSlug,
         language
@@ -43,9 +49,15 @@ export class SubtitleService {
      * @param accessDTO
      */
     async getVTTFile(accessDTO: GetSubtitleAccessDTO): Promise<VTTFile> {
-        // TODO: Create video mapper / subtitle mapper / getter
         const subtitle = await this.getSubtitle(accessDTO);
         await this.validateSubtitleFileExist(subtitle);
         return this.storageProvider.getVttFile(subtitle);
+    }
+
+    /**
+     * For a viceo slug given, returns all subtitles available for it
+     */
+    getVideoSubtitles(videoSlug: VideoSlug): Promise<Subtitle[]> {
+        return this.getManyByVideoSlug(videoSlug);
     }
 }

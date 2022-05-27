@@ -5,10 +5,20 @@ import { SubtitleLanguage } from "../../domain/models/subtitles/SubtitleLanguage
 import { SubtitleService } from "../../domain/services/subtitle";
 import { GetSubtitleAccessDTO } from "../../application/dto/getSubtitleAccess";
 import { VTTFile } from "../../domain/models/VTTFile";
+import { GetManySubtitleResponse } from "./models/GetManySubtitle.response";
 
 @Controller("")
 export class AccessSubtitleController {
     constructor(private readonly svc: SubtitleService) {}
+
+    @Get(":videoSlug")
+    async getVideoSubtitles(
+        @Param("videoSlug") videoSlug: VideoSlug
+    ): Promise<GetManySubtitleResponse> {
+        const subtitles = await this.svc.getVideoSubtitles(videoSlug);
+        return GetManySubtitleResponse.of(subtitles);
+    }
+
     @Get(":videoSlug/:language")
     async accessSubtitles(
         @Param("videoSlug") videoSlug: VideoSlug,

@@ -21,7 +21,6 @@ export class AppModule {
             providers: [Logger, AppService],
             imports: [
                 HealthModule,
-                TodoModule,
                 OpenTelemetryModule.forRoot(),
                 ConfigModule.forRoot({
                     isGlobal: true,
