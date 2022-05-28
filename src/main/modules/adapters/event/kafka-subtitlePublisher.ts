@@ -1,9 +1,9 @@
 import { Subtitle } from "../../domain/models/subtitles/Subtitle";
 import { InjectKafkaClient } from "@polyflix/x-utils";
 import { ClientKafka } from "@nestjs/microservices";
-import { SubtitlePublisher } from "../../domain/ports/SubtitlePublisher";
+import { _SubtitlePublisher } from "../../domain/ports/_SubtitlePublisher";
 
-export class KafkaSubtitlePublisher extends SubtitlePublisher {
+export class KafkaSubtitlePublisher extends _SubtitlePublisher {
     constructor(@InjectKafkaClient() kafkaClient: ClientKafka) {
         super();
     }
