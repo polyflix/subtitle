@@ -24,7 +24,7 @@ deploy:kube:
   extends: .kube-deploy
   variables:
     HELM_OPTIONS: "--set image.tag=$CI_COMMIT_BRANCH-$CI_COMMIT_SHORT_SHA"
-    HELM_RELEASE_NAME: "video"
+    HELM_RELEASE_NAME: "subtitle"
   rules:
     - if: $CI_COMMIT_BRANCH == "main"
       variables:
