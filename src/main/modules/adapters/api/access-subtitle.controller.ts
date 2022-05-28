@@ -1,5 +1,4 @@
 import { Controller, Get, Param } from "@nestjs/common";
-import { Subtitle } from "../../domain/models/subtitles/Subtitle";
 import { VideoSlug } from "../../domain/models/videos/Video";
 import { SubtitleLanguage } from "../../domain/models/subtitles/SubtitleLanguage";
 import { SubtitleService } from "../../domain/services/subtitle";
@@ -9,7 +8,8 @@ import { GetManySubtitleResponse } from "./models/GetManySubtitle.response";
 
 @Controller("")
 export class AccessSubtitleController {
-    constructor(private readonly svc: SubtitleService) {}
+    constructor(private readonly svc: SubtitleService) {
+    }
 
     @Get(":videoSlug")
     async getVideoSubtitles(
