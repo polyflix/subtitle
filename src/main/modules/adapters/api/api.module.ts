@@ -4,7 +4,6 @@ import { SubtitleService } from "../../domain/services/subtitle";
 
 @Module({
     controllers: [AccessSubtitleController],
-    imports: [],
     providers: [SubtitleService]
 })
 export class ApiModule {}

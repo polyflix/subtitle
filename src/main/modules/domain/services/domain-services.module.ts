@@ -1,9 +1,8 @@
 import { Module } from "@nestjs/common";
 import { SubtitleService } from "./subtitle";
-import { SubtitleRepository } from "../ports/SubtitleRepository";
 
 @Module({
-    imports: [SubtitleService],
-    exports: [SubtitleService]
+    exports: [SubtitleService],
+    providers: [SubtitleService]
 })
 export class DomainServicesModule {}

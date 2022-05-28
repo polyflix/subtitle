@@ -27,9 +27,8 @@ export const configureTypeORM = (
 
     const config: TypeOrmModuleOptions = {
         type: "postgres",
-        synchronize: ISLOCAL,
         migrationsTableName: "migrations",
-        entities: ["dist/**/*.entity.js"],
+        entities: ["dist/**/*.entity{.ts,.js}"],
         logging: configService.get("database.psql.debug") === "true",
         cli: {
             migrationsDir: "src/resources/migrations"
