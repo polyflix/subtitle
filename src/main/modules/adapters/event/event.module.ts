@@ -4,7 +4,7 @@ import { ConfigService } from "@nestjs/config";
 import { ClientProxyFactory } from "@nestjs/microservices";
 import { KafkaSubtitlePublisher } from "./kafka-subtitlePublisher";
 import { KafkaVideoConsumer } from "./kafka-video-consumer";
-import { _SubtitlePublisher } from "../../domain/ports/_SubtitlePublisher";
+import { SubtitlesPublisher } from "../../domain/ports/SubtitlesPublisher";
 
 @Global()
 @Module({
@@ -24,7 +24,7 @@ import { _SubtitlePublisher } from "../../domain/ports/_SubtitlePublisher";
             inject: [ConfigService]
         },
         {
-            provide: _SubtitlePublisher,
+            provide: SubtitlesPublisher,
             useClass: KafkaSubtitlePublisher
         }
     ],
