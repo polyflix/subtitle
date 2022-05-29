@@ -1,15 +1,16 @@
-import { Controller, Get, Param } from "@nestjs/common";
+import { Controller, Get, Param, UseFilters } from "@nestjs/common";
 import { VideoSlug } from "../../domain/models/videos/Video";
 import { SubtitleLanguage } from "../../domain/models/subtitles/SubtitleLanguage";
 import { SubtitleService } from "../../domain/services/subtitle";
 import { GetSubtitleAccessDTO } from "../../application/dto/getSubtitleAccess";
 import { VTTFile } from "../../domain/models/VTTFile";
 import { GetManySubtitleResponse } from "./models/GetManySubtitle.response";
+import { DomainExceptionFilter } from "./domain-exception.filter";
 
-@Controller("")
+@Controller("/subtitles")
+@UseFilters(DomainExceptionFilter)
 export class AccessSubtitleController {
-    constructor(private readonly svc: SubtitleService) {
-    }
+    constructor(private readonly svc: SubtitleService) {}
 
     @Get(":videoSlug")
     async getVideoSubtitles(
