@@ -1,3 +1,4 @@
 FROM gitlab.polytech.umontpellier.fr:5050/polyflix-do/docker-images/psql-migration:latest
 
 COPY ./dist/resources/migrations migrations
+RUN tsc --skipLibCheck true --skipDefaultLibCheck true  ./migrations/*.ts  --outDir "./migrations" || echo "expected error"
