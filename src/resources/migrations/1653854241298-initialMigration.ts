@@ -4,6 +4,7 @@ export class initialMigration1653854241298 implements MigrationInterface {
     name = "initialMigration1653854241298";
 
     public async up(queryRunner: QueryRunner): Promise<void> {
+        await queryRunner.query(`create extension if not exists "uuid-ossp"`);
         await queryRunner.query(
             `CREATE TYPE "public"."subtitle_language_enum" AS ENUM('fr-FR', 'en-US')`
         );
