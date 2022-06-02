@@ -1,11 +1,9 @@
 import { Injectable, Logger } from "@nestjs/common";
+import { Subtitle } from "../models/subtitles/Subtitle";
 
 @Injectable()
 export abstract class TextToSpeechProvider {
     protected logger = new Logger(this.constructor.name);
-    /**
-     * Upload the file to the provider
-     * @param filePath
-     */
-    abstract upload(filePath: string): Promise<void>;
+    abstract runSubtitleProcessing(subtitle: Subtitle): Promise<any>;
+    abstract cleanUp(subtitle: Subtitle): Promise<void>;
 }
