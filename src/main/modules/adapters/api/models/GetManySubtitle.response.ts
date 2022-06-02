@@ -26,11 +26,11 @@ export class GetManySubtitleResponse {
 
     private static validateOnlyOneVideoSlug(subtitle: Subtitle[]) {
         if (subtitle.length === 0) return;
-        const firstVideoSlug = subtitle[0].video.slug;
+        const firstVideoSlug = subtitle[0].videoSlug;
 
         // We test whether there is another video slug than the one expected
         const predicate = (subtitle: Subtitle) =>
-            subtitle.video.slug !== firstVideoSlug;
+            subtitle.videoSlug !== firstVideoSlug;
 
         if (subtitle.filter(predicate).length > 0) {
             GetManySubtitleResponse.#logger.error(
@@ -47,7 +47,7 @@ export class GetManySubtitleResponse {
 
         let firstVideoSlug = "";
         if (subtitles.length > 0) {
-            firstVideoSlug = subtitles[0].video.slug;
+            firstVideoSlug = subtitles[0].videoSlug;
         }
         return new GetManySubtitleResponse(firstVideoSlug, subtitles);
     }

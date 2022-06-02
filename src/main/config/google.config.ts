@@ -1,7 +1,7 @@
-import { StorageOptions } from "@google-cloud/storage/build/src/storage";
 import { ConfigService } from "@nestjs/config";
+import { ClientOptions } from "google-gax/build/src/clientInterface";
 
-export const gcloudConfig = (cfg: ConfigService): StorageOptions => {
+export const gcloudConfig = (cfg: ConfigService): ClientOptions => {
     const buff = new Buffer(cfg.get("storage.google.project.key"), "base64");
     const decoded = buff.toString("ascii");
     return {

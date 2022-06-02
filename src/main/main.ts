@@ -35,7 +35,7 @@ async function bootstrap() {
     });
 
     app.connectMicroservice(kafkaConfig(config["kafka"]));
-    await app.startAllMicroservices();
+    app.startAllMicroservices();
 
     app.useGlobalPipes(new ValidationPipe());
     app.enableShutdownHooks();

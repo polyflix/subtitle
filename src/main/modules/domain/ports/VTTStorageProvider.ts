@@ -6,7 +6,8 @@ import { Subtitle } from "../models/subtitles/Subtitle";
 export abstract class VTTStorageProvider {
     protected logger = new Logger(this.constructor.name);
 
-    abstract uploadVTT(file: VTTFile): Promise<void>;
+    abstract uploadVTT(subtitle: Subtitle): Promise<void>;
     abstract vttExists(subtitle: Subtitle): Promise<boolean>;
     abstract getVttFile(subtitle: Subtitle): Promise<VTTFile>;
+    abstract downloadLocalVideo(subtitle: Subtitle): Promise<void>;
 }

@@ -1,7 +1,7 @@
-import { Injectable } from "@nestjs/common";
+import { Injectable, Logger } from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { gcloudConfig } from "../../../config/google.config";
-import { Bucket, Storage } from "@google-cloud/storage";
+import { Bucket, Storage, UploadOptions } from "@google-cloud/storage";
 import { StorageServiceUnreachable } from "../../domain/errors/StorageServiceUnreachable";
 import { TextToSpeechProvider } from "../../domain/ports/TextToSpeechProvider";
 import { Subtitle } from "../../domain/models/subtitles/Subtitle";
@@ -23,6 +23,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
     readonly #speechClient: SpeechClient;
     readonly #bucket: Bucket;
 
+    protected logger = new Logger(GoogleCloudStoragePersistence.name);
     constructor(private readonly configService: ConfigService) {
         super();
         const config = gcloudConfig(this.configService);
@@ -33,10 +34,13 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         this.#speechClient = new SpeechClient(config);
     }
 
-    async #upload(filePath: string): Promise<void> {
-        this.logger.debug("Uploading file to GCP", { file: filePath });
+    async #upload(
+        filePath: string,
+        uploadOption?: UploadOptions
+    ): Promise<void> {
+        this.logger.debug(`Uploading file to GCP ${filePath}`);
         try {
-            await this.#bucket.upload(filePath);
+            await this.#bucket.upload(filePath, uploadOption);
             return;
         } catch (e) {
             this.logger.error("Failed to upload file to GCP, reason: " + e, {
@@ -47,14 +51,14 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
     }
 
     #getAudioGcpFilePath(audioPath: string): string {
-        return `gs://${this.#bucket.name}/${path.basename(audioPath)}`;
+        return `gs://${this.#bucket.name}/${audioPath}`;
     }
 
     #createTextToSpeechRequest(
         subtitle: Subtitle
     ): ILongRunningRecognizeRequest {
-        const localAudioPath = subtitle.getLocalAudioFileName();
-        const gcpAudioPath = this.#getAudioGcpFilePath(localAudioPath);
+        const persistantAudioPath = subtitle.getPersistantAudioFileLocation();
+        const gcpAudioPath = this.#getAudioGcpFilePath(persistantAudioPath);
         const audio = {
             uri: gcpAudioPath
         };
@@ -85,6 +89,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
     #tryRunRecognize(
         subtitle: Subtitle
     ): Promise<ILongRunningRecognizeResponse> {
+        this.logger.debug(`tryRunRecognize() ${subtitle.getLoggingIdentifier()}`);
         const request: ILongRunningRecognizeRequest =
             this.#createTextToSpeechRequest(subtitle);
         try {
@@ -92,24 +97,54 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         } catch (e) {
             this.logger.error("Failed to run speech to text", { error: e });
             throw new SubtitleProcessingFailure(
-                subtitle.video.slug,
+                subtitle.videoSlug,
                 subtitle.language
             );
         }
     }
 
-    cleanUp(subtitle: Subtitle): Promise<void> {
-        return Promise.resolve(undefined);
+    #saveVttLocal(subtitle: Subtitle, vttFileContent: string) {
+        try {
+            this.logger.debug(`saveVttLocal() ${subtitle.getLoggingIdentifier()}`);
+            const vttFilePath = subtitle.getLocalVttFileLocation();
+
+            if (!fs.existsSync(path.dirname(vttFilePath))) {
+                fs.mkdirSync(path.dirname(vttFilePath), { recursive: true });
+            }
+            fs.writeFileSync(vttFilePath, vttFileContent);
+        } catch (e) {
+            this.logger.error("Fail to write vtt file", { error: e });
+            throw new SubtitleProcessingFailure(
+                subtitle.videoSlug,
+                subtitle.language
+            );
+        }
+    }
+
+    async cleanUp(subtitle: Subtitle): Promise<void> {
+        this.logger.debug(`cleanUp() ${subtitle.getLoggingIdentifier()}`);
+        try {
+            const gcpAudioPath = subtitle.getPersistantAudioFileLocation();
+            await this.#bucket.file(gcpAudioPath).delete();
+        } catch (e) {
+            this.logger.error("Failed to clean up audio file", { error: e });
+        }
     }
 
     async runSubtitleProcessing(subtitle: Subtitle) {
         const transcript = await this.#tryRunRecognize(subtitle);
         const vttFile = VttFile.fromGoogleAPI(transcript);
 
-        try {
-            fs.writeFileSync(subtitle.getPersistenceFileName(), vttFile);
-        } catch (e) {
-            console.log(e);
-        }
+        this.#saveVttLocal(subtitle, vttFile);
+    }
+
+    async uploadAudioFile(subtitle: Subtitle): Promise<void> {
+        this.logger.debug(`uploadAudioFile() ${subtitle.getLoggingIdentifier()}`);
+
+        const audioPath = subtitle.getLocalAudioFileLocation();
+        const uploadOption: UploadOptions = {
+            destination: subtitle.getPersistantAudioFileLocation()
+        };
+        await this.#upload(audioPath, uploadOption);
     }
 }

@@ -3,21 +3,18 @@ import { Subtitle, SubtitleId } from "../../domain/models/subtitles/Subtitle";
 import { Array, Option } from "@swan-io/boxed";
 import { Video, VideoSlug } from "../../domain/models/videos/Video";
 import { SubtitleLanguage } from "../../domain/models/subtitles/SubtitleLanguage";
+import { SubtitleStatus } from "../../domain/models/subtitles/SubtitleStatus";
 
 export class InMemorySubtitles extends SubtitleRepository {
     #subtitles: Subtitle[] = [];
     constructor() {
         super();
 
-        const video = new Video(
-            "05acab31-491b-498d-a7f6-7408baa417e6",
-            "testName",
-            ""
-        );
         const subtitle = new Subtitle(
             "testSubtitleId",
-            video,
-            SubtitleLanguage.Fr
+            "05acab31-491b-498d-a7f6-7408baa417e6",
+            SubtitleLanguage.Fr,
+            ""
         );
         this.saveSubtitle(subtitle);
     }
@@ -29,7 +26,7 @@ export class InMemorySubtitles extends SubtitleRepository {
 
     private searchManyWithVideoSlug(videoSlug: VideoSlug): Subtitle[] {
         const predicate = (subtitle: Subtitle) =>
-            subtitle.video.slug === videoSlug;
+            subtitle.videoSlug === videoSlug;
         return this.#subtitles.filter(predicate);
     }
 
@@ -43,7 +40,7 @@ export class InMemorySubtitles extends SubtitleRepository {
         language: SubtitleLanguage
     ): Option<Subtitle> {
         const predicate = (subtitle: Subtitle) =>
-            subtitle.video.slug === videoSlug && subtitle.language === language;
+            subtitle.videoSlug === videoSlug && subtitle.language === language;
         return Array.getBy(this.#subtitles, predicate);
     }
 
@@ -56,13 +53,15 @@ export class InMemorySubtitles extends SubtitleRepository {
 
     private addToSubtitle(subtitle: Subtitle) {
         this.#subtitles.push(subtitle);
+        return subtitle;
     }
 
     private updateSubtitle(index: number, subtitle: Subtitle) {
         this.#subtitles[index] = subtitle;
+        return subtitle;
     }
 
-    saveSubtitle(subtitle: Subtitle): Promise<void> {
+    saveSubtitle(subtitle: Subtitle): Promise<Subtitle> {
         const found_subtitle = this.searchIndexWithSubtitleId(subtitle.id);
         return Promise.resolve(
             found_subtitle.isNone()

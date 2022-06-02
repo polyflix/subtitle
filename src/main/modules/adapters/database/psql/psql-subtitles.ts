@@ -87,7 +87,8 @@ export class PsqlSubtitlesRepository extends SubtitleRepository {
         return found_subtitles.map(SubtitleEntity.into);
     }
 
-    saveSubtitle(subtitle: Subtitle): Promise<void> {
-        return Promise.resolve(undefined);
+    async saveSubtitle(subtitle: Subtitle): Promise<Subtitle> {
+        const result = await this.repository.save(SubtitleEntity.of(subtitle));
+        return Promise.resolve(SubtitleEntity.into(result));
     }
 }

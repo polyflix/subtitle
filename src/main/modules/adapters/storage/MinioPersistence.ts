@@ -1,4 +1,8 @@
-import { Injectable, NotFoundException } from "@nestjs/common";
+import {
+    Injectable,
+    InternalServerErrorException,
+    NotFoundException
+} from "@nestjs/common";
 import { ConfigService } from "@nestjs/config";
 import { StorageServiceUnreachable } from "../../domain/errors/StorageServiceUnreachable";
 import { InjectMinioClient, MinioClient } from "@svtslv/nestjs-minio";
@@ -7,6 +11,9 @@ import * as Buffer from "buffer";
 import { VTTFile } from "../../domain/models/VTTFile";
 import { VTTStorageProvider } from "../../domain/ports/VTTStorageProvider";
 import { Subtitle } from "../../domain/models/subtitles/Subtitle";
+import * as fs from "fs";
+import { Bucket } from "@google-cloud/storage";
+import { CannotFindVideoFile } from "../../domain/errors/CannotFindVideoFile";
 
 export enum MinIOBuckets {
     Video = "videos",
@@ -60,7 +67,7 @@ export class MinioStoragePersistence extends VTTStorageProvider {
                 dest
         );
         try {
-            await this.client.putObject(MinIOBuckets.Video, dest, file);
+            await this.client.putObject(bucket, dest, file);
             return;
         } catch (e) {
             this.logger.error(
@@ -74,16 +81,20 @@ export class MinioStoragePersistence extends VTTStorageProvider {
         }
     }
 
-    async uploadVTT(file: VTTFile): Promise<void> {
-        const dest = "vtt file name + path ... whatever";
-        const content = "download the content";
-        return this.#upload(MinIOBuckets.Video, dest, content);
+    async uploadVTT(subtitle: Subtitle): Promise<void> {
+        try {
+            const dest = subtitle.getVttFileName();
+            const content = fs.readFileSync(subtitle.getLocalVttFileLocation());
+            return this.#upload(MinIOBuckets.Subtitle, dest, content);
+        } catch (e) {
+            this.logger.error("Could not upload VTT file", { error: e });
+        }
     }
 
     vttExists(subtitle: Subtitle): Promise<boolean> {
         return this.#fileExists(
             MinIOBuckets.Subtitle,
-            subtitle.getPersistenceFileName()
+            subtitle.getVttFileName()
         );
     }
 
@@ -94,12 +105,29 @@ export class MinioStoragePersistence extends VTTStorageProvider {
 
         const url_psu = await this.#getFilePSU(
             MinIOBuckets.Subtitle,
-            subtitle.getPersistenceFileName()
+            subtitle.getVttFileName()
         );
         return new VTTFile(
-            subtitle.getPersistenceFileName(),
+            subtitle.getVttFileName(),
             url_psu,
             subtitle.language
         );
+    }
+
+    async downloadLocalVideo(subtitle: Subtitle): Promise<void> {
+        const path = subtitle.getLocalVideoFileLocation();
+        const videoFilename = `${
+            subtitle.videoSlug
+        }/${subtitle.getLocalVideoFileName()}`;
+
+        await this.client
+            .fGetObject(MinIOBuckets.Video, videoFilename, path)
+            .catch((err) => {
+                if (err) {
+                    this.logger.error(err);
+                    throw new CannotFindVideoFile(videoFilename);
+                }
+            });
+        this.logger.log(`Succesfully retrieve video ${videoFilename}`);
     }
 }

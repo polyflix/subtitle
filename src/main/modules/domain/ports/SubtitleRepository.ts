@@ -11,5 +11,5 @@ export abstract class SubtitleRepository {
         language: SubtitleLanguage
     ): Promise<Option<Subtitle>>;
     abstract getVideoSubtitles(videoSlug: VideoSlug): Promise<Subtitle[]>;
-    abstract saveSubtitle(subtitle: Subtitle): Promise<void>;
+    abstract saveSubtitle(subtitle: Subtitle): Promise<Subtitle>;
 }

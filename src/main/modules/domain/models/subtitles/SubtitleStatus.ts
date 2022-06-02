@@ -1,5 +1,5 @@
 export enum SubtitleStatus {
-    UPLOADING = "UPLOADING",
+    IDLE = "IDLE",
     PROCESSING = "PROCESSING",
     COMPLETED = "COMPLETED",
     FAILED = "FAILED"
