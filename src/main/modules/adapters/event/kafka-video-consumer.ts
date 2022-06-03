@@ -32,14 +32,6 @@ export class KafkaVideoConsumer {
     }
 
     @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
-    newVideoEvent(
-        @Payload("value", new VideoMessageValidationPipe())
-        payload: VideoMessage
-    ) {
-        this.logger.log(JSON.stringify(payload));
-    }
-
-    @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
     publishSubtitleCreation(@Payload("value") value: PolyflixKafkaValue) {
         this.logger.debug("Sending publishSubtitleCreation");
         const subtitleDto = new SubtitleDto(
