@@ -96,15 +96,13 @@ export class SubtitleService {
         const subtitles = await this.subtitleRepository.getVideoSubtitles(
             videoSlug
         );
-        let subtitle;
-        for (subtitle of subtitles) {
-            if (
+
+        const subtitlePredicate = (subtitle: Subtitle) => {
+            return (
                 subtitle.language === language &&
                 subtitle.status !== SubtitleStatus.FAILED
-            ) {
-                return true;
-            }
-        }
-        return false;
+            );
+        };
+        return subtitles.findIndex(subtitlePredicate) !== -1;
     }
 }
