@@ -16,7 +16,6 @@ import { SubtitleGenerationService } from "../../domain/services/subtitle-genera
 @Controller()
 export class KafkaVideoConsumer {
     private static VIDEO_TOPIC_CONSUMER = "polyflix.video";
-    private static SUBTITLE_TOPIC_PRODUCER = "polyflix.subtitle";
 
     private readonly logger = new Logger(this.constructor.name);
 
@@ -30,9 +29,6 @@ export class KafkaVideoConsumer {
                 "Config key kafka.topics.subtitle was not configured, exiting"
             );
         }
-        KafkaVideoConsumer.SUBTITLE_TOPIC_PRODUCER = this.configService.get(
-            "kafka.topics.subtitle"
-        );
     }
 
     @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
@@ -43,7 +39,7 @@ export class KafkaVideoConsumer {
         this.logger.log(JSON.stringify(payload));
     }
 
-    @EventPattern(KafkaVideoConsumer.SUBTITLE_TOPIC_PRODUCER)
+    @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
     publishSubtitleCreation(@Payload("value") value: PolyflixKafkaValue) {
         this.logger.debug("Sending publishSubtitleCreation");
         const subtitleDto = new SubtitleDto(
@@ -51,7 +47,10 @@ export class KafkaVideoConsumer {
             value.payload.language ?? SubtitleLanguage.Fr
         );
 
-        if (value.trigger === "CREATE") {
+        if (
+            value.trigger === "CREATE" &&
+            value.payload.sourceType === "internal"
+        ) {
             this.subtitleGenerationService.generateVideoSubtitles(subtitleDto);
         }
     }
