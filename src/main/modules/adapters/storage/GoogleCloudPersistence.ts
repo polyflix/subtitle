@@ -89,7 +89,9 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
     #tryRunRecognize(
         subtitle: Subtitle
     ): Promise<ILongRunningRecognizeResponse> {
-        this.logger.debug(`tryRunRecognize() ${subtitle.getLoggingIdentifier()}`);
+        this.logger.debug(
+            `tryRunRecognize() ${subtitle.getLoggingIdentifier()}`
+        );
         const request: ILongRunningRecognizeRequest =
             this.#createTextToSpeechRequest(subtitle);
         try {
@@ -105,7 +107,9 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
 
     #saveVttLocal(subtitle: Subtitle, vttFileContent: string) {
         try {
-            this.logger.debug(`saveVttLocal() ${subtitle.getLoggingIdentifier()}`);
+            this.logger.debug(
+                `saveVttLocal() ${subtitle.getLoggingIdentifier()}`
+            );
             const vttFilePath = subtitle.getLocalVttFileLocation();
 
             if (!fs.existsSync(path.dirname(vttFilePath))) {
@@ -139,7 +143,9 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
     }
 
     async uploadAudioFile(subtitle: Subtitle): Promise<void> {
-        this.logger.debug(`uploadAudioFile() ${subtitle.getLoggingIdentifier()}`);
+        this.logger.debug(
+            `uploadAudioFile() ${subtitle.getLoggingIdentifier()}`
+        );
 
         const audioPath = subtitle.getLocalAudioFileLocation();
         const uploadOption: UploadOptions = {

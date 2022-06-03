@@ -3,9 +3,10 @@ import { VideoSlug } from "../../../domain/models/videos/Video";
 import { Subtitle } from "../../../domain/models/subtitles/Subtitle";
 
 export class SubtitleDto {
-    readonly videoSlug: VideoSlug;
-    readonly language: SubtitleLanguage;
-
+    constructor(
+        readonly videoSlug: VideoSlug,
+        readonly language: SubtitleLanguage
+    ) {}
     static into(dto: SubtitleDto): Subtitle {
         return new Subtitle(
             Subtitle.generateId(),

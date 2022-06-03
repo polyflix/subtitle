@@ -1,6 +1,6 @@
 import { Injectable, Logger, NotFoundException } from "@nestjs/common";
 import { VideoSlug } from "../models/videos/Video";
-import { Subtitle, SubtitleId } from "../models/subtitles/Subtitle";
+import { Subtitle } from "../models/subtitles/Subtitle";
 import { VTTStorageProvider } from "../ports/VTTStorageProvider";
 import { CannotFindVTTFile } from "../errors/CannotFindVTTFile";
 import { GetSubtitleAccessDTO } from "../../application/dto/getSubtitleAccess";
@@ -90,15 +90,18 @@ export class SubtitleService {
         videoSlug: VideoSlug,
         language: SubtitleLanguage
     ): Promise<boolean> {
-        return (
-            await this.subtitleRepository.getSubtitle(videoSlug, language)
-        ).match({
-            Some: (subtitle) => {
-                return subtitle.status !== SubtitleStatus.FAILED;
-            },
-            None: () => {
-                return false;
+        const subtitles = await this.subtitleRepository.getVideoSubtitles(
+            videoSlug
+        );
+        let subtitle;
+        for (subtitle of subtitles) {
+            if (
+                subtitle.language === language &&
+                subtitle.status !== SubtitleStatus.FAILED
+            ) {
+                return true;
             }
-        });
+        }
+        return false;
     }
 }

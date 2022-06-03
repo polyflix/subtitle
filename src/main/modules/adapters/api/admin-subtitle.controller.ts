@@ -3,11 +3,11 @@ import { SubtitleService } from "../../domain/services/subtitle";
 import { DomainExceptionFilter } from "./domain-exception.filter";
 import { SubtitleDto } from "./models/SubtitleDto";
 import { SubtitleGenerationService } from "../../domain/services/subtitle-generation";
-import { Roles } from "@polyflix/x-utils";
+import { Roles, Role } from "@polyflix/x-utils";
 
 @Controller("/subtitles")
 @UseFilters(DomainExceptionFilter)
-@Roles(Roles.ADMIN)
+@Roles(Role.Admin)
 export class AdminSubtitleController {
     constructor(
         private readonly svc: SubtitleService,

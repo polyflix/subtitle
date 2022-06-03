@@ -8,6 +8,8 @@ import {
 import { DomainException } from "../../domain/errors/DomainException";
 import { CannotFindVTTFile } from "../../domain/errors/CannotFindVTTFile";
 import { HttpAdapterHost } from "@nestjs/core";
+import { SubtitleProcessingFailure } from "../../domain/errors/SubtitleProcessingFailure";
+import { SubtitleAlreadyExists } from "../../domain/errors/SubtitleAlreadyExists";
 
 @Catch(DomainException)
 export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
@@ -24,6 +26,14 @@ export class DomainExceptionFilter implements ExceptionFilter<DomainException> {
         // TODO: Move to something better
         if (exception instanceof CannotFindVTTFile) {
             status = HttpStatus.NOT_FOUND;
+        }
+
+        if (exception instanceof SubtitleProcessingFailure) {
+            status = HttpStatus.SERVICE_UNAVAILABLE;
+        }
+
+        if (exception instanceof SubtitleAlreadyExists) {
+            status = HttpStatus.CONFLICT;
         }
 
         this.#logger.debug(

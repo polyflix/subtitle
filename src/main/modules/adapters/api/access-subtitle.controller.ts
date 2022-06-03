@@ -37,12 +37,4 @@ export class AccessSubtitleController {
 
         return this.svc.getVTTFile(accessDto);
     }
-
-    @Get()
-    async tempGenerateSubtitles() {
-        await this.subtitleGenerationService.generateVideoSubtitles({
-            videoSlug: "9a45915f-25f0-4689-a4b9-bde9a858cc50",
-            language: SubtitleLanguage.Fr
-        });
-    }
 }

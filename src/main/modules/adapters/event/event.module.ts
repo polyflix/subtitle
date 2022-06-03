@@ -5,6 +5,8 @@ import { ClientProxyFactory } from "@nestjs/microservices";
 import { KafkaSubtitlePublisher } from "./kafka-subtitlePublisher";
 import { KafkaVideoConsumer } from "./kafka-video-consumer";
 import { SubtitlesPublisher } from "../../domain/ports/SubtitlesPublisher";
+import { SubtitleGenerationService } from "../../domain/services/subtitle-generation";
+import { SubtitleService } from "../../domain/services/subtitle";
 
 @Global()
 @Module({
@@ -26,7 +28,9 @@ import { SubtitlesPublisher } from "../../domain/ports/SubtitlesPublisher";
         {
             provide: SubtitlesPublisher,
             useClass: KafkaSubtitlePublisher
-        }
+        },
+        SubtitleGenerationService,
+        SubtitleService
     ],
     controllers: [KafkaVideoConsumer],
     exports: [KAFKA_CLIENT]

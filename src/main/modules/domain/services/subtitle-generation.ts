@@ -9,6 +9,7 @@ import * as ffmpeg from "fluent-ffmpeg";
 import { SubtitleDto } from "../../adapters/api/models/SubtitleDto";
 import { SubtitleStatus } from "../models/subtitles/SubtitleStatus";
 import * as fs from "fs";
+import { SubtitleAlreadyExists } from "../errors/SubtitleAlreadyExists";
 
 ffmpeg.setFfmpegPath(ffmpegInstaller.path);
 
@@ -22,49 +23,6 @@ export class SubtitleGenerationService {
         private readonly subtitles: SubtitleRepository,
         private readonly subtitleService: SubtitleService
     ) {}
-
-    /**
-     * Take an audio file and upload it to TextToSpeech service
-     * @param TODO
-     * @private
-     */
-    private uploadToSpeechToText(TODO: any) {
-        this.logger.log(
-            "SubtitleGenerationService.uploadToSpeechToText() to be implemented"
-        );
-    }
-
-    /**
-     * Ask TextToSpeech ports to run it
-     * @private
-     */
-    private runSpeechToText() {
-        this.logger.log(
-            "SubtitleGenerationService.runSpeechToText() to be implemented"
-        );
-    }
-
-    /**
-     * Once the work is done for speech to text, we take it back
-     * @param TODO
-     * @private
-     */
-    private downloadFromSpeechToText(TODO: any) {
-        this.logger.log(
-            "SubtitleGenerationService.downloadFromSpeechToText() to be implemented"
-        );
-    }
-
-    /**
-     * We upload the VTT file definitely to persistent storage
-     * @param TODO
-     * @private
-     */
-    private uploadToPersistent(file: string) {
-        this.logger.log(
-            "SubtitleGenerationService.uploadToPersistent() to be implemented"
-        );
-    }
 
     private videoToAudio(subtitle: Subtitle) {
         const videoFilePath = subtitle.getLocalVideoFileLocation();
@@ -97,8 +55,8 @@ export class SubtitleGenerationService {
 
     /**
      * Remove any folder / file created for a generation
-     * @param TODO
      * @private
+     * @param subtitle
      */
     async #cleanUp(subtitle: Subtitle) {
         this.logger.debug(`cleanUp() ${subtitle.getLoggingIdentifier()}`);
@@ -115,8 +73,10 @@ export class SubtitleGenerationService {
             language
         );
         if (subtitlesExists) {
-            //todo throw already exists
-            return;
+            this.logger.warn(
+                `Subtitles already exists ${videoSlug} (${language})`
+            );
+            return new SubtitleAlreadyExists(videoSlug, language);
         }
 
         const subtitle = await this.subtitleService.createSubtitle(subtitleDto);
@@ -143,8 +103,7 @@ export class SubtitleGenerationService {
                 subtitle,
                 SubtitleStatus.FAILED
             );
-            console.log(error);
-            //todo handle error
+            this.logger.error(error);
         } finally {
             await this.#cleanUp(subtitle);
         }
