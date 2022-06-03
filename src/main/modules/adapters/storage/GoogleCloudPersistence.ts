@@ -8,14 +8,14 @@ import { Subtitle } from "../../domain/models/subtitles/Subtitle";
 import { SpeechClient } from "@google-cloud/speech";
 import * as path from "path";
 import { google } from "@google-cloud/speech/build/protos/protos";
-import ILongRunningRecognizeRequest = google.cloud.speech.v1.ILongRunningRecognizeRequest;
-import IRecognitionConfig = google.cloud.speech.v1.IRecognitionConfig;
-import AudioEncoding = google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
-import LongRunningRecognizeResponse = google.cloud.speech.v1.LongRunningRecognizeResponse;
-import ILongRunningRecognizeResponse = google.cloud.speech.v1.ILongRunningRecognizeResponse;
 import { SubtitleProcessingFailure } from "../../domain/errors/SubtitleProcessingFailure";
 import { VttFile } from "@polyflix/vtt-parser";
 import * as fs from "fs";
+import { Span } from "nestjs-otel";
+import ILongRunningRecognizeRequest = google.cloud.speech.v1.ILongRunningRecognizeRequest;
+import IRecognitionConfig = google.cloud.speech.v1.IRecognitionConfig;
+import AudioEncoding = google.cloud.speech.v1.RecognitionConfig.AudioEncoding;
+import ILongRunningRecognizeResponse = google.cloud.speech.v1.ILongRunningRecognizeResponse;
 
 @Injectable()
 export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
@@ -125,6 +125,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         }
     }
 
+    @Span()
     async cleanUp(subtitle: Subtitle): Promise<void> {
         this.logger.debug(`cleanUp() ${subtitle.getLoggingIdentifier()}`);
         try {
@@ -135,6 +136,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         }
     }
 
+    @Span()
     async runSubtitleProcessing(subtitle: Subtitle) {
         const transcript = await this.#tryRunRecognize(subtitle);
         const vttFile = VttFile.fromGoogleAPI(transcript);
@@ -142,6 +144,7 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
         this.#saveVttLocal(subtitle, vttFile);
     }
 
+    @Span()
     async uploadAudioFile(subtitle: Subtitle): Promise<void> {
         this.logger.debug(
             `uploadAudioFile() ${subtitle.getLoggingIdentifier()}`

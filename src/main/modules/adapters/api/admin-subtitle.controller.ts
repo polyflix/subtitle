@@ -4,8 +4,9 @@ import { DomainExceptionFilter } from "./domain-exception.filter";
 import { SubtitleDto } from "./models/SubtitleDto";
 import { SubtitleGenerationService } from "../../domain/services/subtitle-generation";
 import { Roles, Role } from "@polyflix/x-utils";
+import { Span } from "nestjs-otel";
 
-@Controller("/subtitles")
+@Controller("/admin/subtitles")
 @UseFilters(DomainExceptionFilter)
 @Roles(Role.Admin)
 export class AdminSubtitleController {
@@ -15,6 +16,7 @@ export class AdminSubtitleController {
     ) {}
 
     @Post()
+    @Span()
     async generateSubtitles(@Body() createDto: SubtitleDto) {
         await this.subtitleGenerationService.generateVideoSubtitles(createDto);
     }

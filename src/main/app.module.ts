@@ -8,6 +8,8 @@ import { StorageModule } from "./modules/adapters/storage/storage.module";
 import { EventModule } from "./modules/adapters/event/event.module";
 import { ApiModule } from "./modules/adapters/api/api.module";
 import { DomainServicesModule } from "./modules/domain/services/domain-services.module";
+import { TracingInjectionInterceptor } from "./core/tracing.interceptor";
+import { APP_INTERCEPTOR } from "@nestjs/core";
 
 interface AppModuleOptions {
     config?: Record<string, any>;
@@ -17,7 +19,14 @@ export class AppModule {
     static bootstrap(options?: AppModuleOptions): DynamicModule {
         return {
             module: AppModule,
-            providers: [Logger, AppService],
+            providers: [
+                Logger,
+                AppService,
+                {
+                    provide: APP_INTERCEPTOR,
+                    useClass: TracingInjectionInterceptor
+                }
+            ],
             imports: [
                 HealthModule,
                 OpenTelemetryModule.forRoot(),

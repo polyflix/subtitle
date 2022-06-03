@@ -14,6 +14,8 @@ import {
     SemanticResourceAttributes,
     TelemetrySdkLanguageValues
 } from "@opentelemetry/semantic-conventions";
+import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
+import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
 
 const LOGGER_CTX = "TracingLoader";
 
@@ -34,14 +36,18 @@ export const configureOTel = (
 
     return new NodeSDK({
         resource: new Resource({
-            [SemanticResourceAttributes.SERVICE_NAME]: "boilerplate",
+            [SemanticResourceAttributes.SERVICE_NAME]: "subtitle",
             [SemanticResourceAttributes.TELEMETRY_SDK_LANGUAGE]:
                 TelemetrySdkLanguageValues.NODEJS
         }),
         spanProcessor: new BatchSpanProcessor(otelExporter),
         traceExporter: otelExporter,
         contextManager: new AsyncLocalStorageContextManager(),
-        instrumentations: [new WinstonInstrumentation()],
+        instrumentations: [
+            new WinstonInstrumentation(),
+            new HttpInstrumentation(),
+            new ExpressInstrumentation()
+        ],
         textMapPropagator: new CompositePropagator({
             propagators: [
                 // Propagate the contexte of the trace

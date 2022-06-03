@@ -9,6 +9,7 @@ import { VTTFile } from "../models/VTTFile";
 import { SubtitleLanguage } from "../models/subtitles/SubtitleLanguage";
 import { SubtitleStatus } from "../models/subtitles/SubtitleStatus";
 import { SubtitleDto } from "../../adapters/api/models/SubtitleDto";
+import { Span } from "nestjs-otel";
 
 @Injectable()
 export class SubtitleService {
@@ -25,6 +26,7 @@ export class SubtitleService {
         }
     }
 
+    @Span()
     private async getManyByVideoSlug(
         videoSlug: VideoSlug
     ): Promise<Subtitle[]> {
@@ -62,6 +64,7 @@ export class SubtitleService {
     /**
      * For a video slug given, returns all subtitleRepository available for it
      */
+    @Span()
     getVideoSubtitles(videoSlug: VideoSlug): Promise<Subtitle[]> {
         return this.getManyByVideoSlug(videoSlug);
     }

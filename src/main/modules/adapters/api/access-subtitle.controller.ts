@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Param, Post, UseFilters } from "@nestjs/common";
+import { Controller, Get, Param, UseFilters } from "@nestjs/common";
 import { VideoSlug } from "../../domain/models/videos/Video";
 import { SubtitleLanguage } from "../../domain/models/subtitles/SubtitleLanguage";
 import { SubtitleService } from "../../domain/services/subtitle";
@@ -6,18 +6,15 @@ import { GetSubtitleAccessDTO } from "../../application/dto/getSubtitleAccess";
 import { VTTFile } from "../../domain/models/VTTFile";
 import { GetManySubtitleResponse } from "./models/GetManySubtitle.response";
 import { DomainExceptionFilter } from "./domain-exception.filter";
-import { SubtitleDto } from "./models/SubtitleDto";
-import { SubtitleGenerationService } from "../../domain/services/subtitle-generation";
+import { Span } from "nestjs-otel";
 
 @Controller("/subtitles")
 @UseFilters(DomainExceptionFilter)
 export class AccessSubtitleController {
-    constructor(
-        private readonly svc: SubtitleService,
-        private readonly subtitleGenerationService: SubtitleGenerationService
-    ) {}
+    constructor(private readonly svc: SubtitleService) {}
 
     @Get(":videoSlug")
+    @Span()
     async getVideoSubtitles(
         @Param("videoSlug") videoSlug: VideoSlug
     ): Promise<GetManySubtitleResponse> {
