@@ -7,7 +7,7 @@ import { v4 as uuidv4 } from "uuid";
 export type SubtitleId = string;
 
 export class Subtitle {
-    private _status: SubtitleStatus = SubtitleStatus.IDLE;
+    private _status: SubtitleStatus = SubtitleStatus.WAITING_UPLOAD;
 
     constructor(
         readonly id: SubtitleId,

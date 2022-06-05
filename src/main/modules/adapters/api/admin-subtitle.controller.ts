@@ -18,6 +18,10 @@ export class AdminSubtitleController {
     @Post()
     @Span()
     async generateSubtitles(@Body() createDto: SubtitleDto) {
-        await this.subtitleGenerationService.generateVideoSubtitles(createDto);
+        await this.subtitleGenerationService.registerSubtitleGenerationRequest(
+            createDto
+        );
+        const subtitle = await this.svc.getSubtitle(createDto);
+        await this.subtitleGenerationService.tryGenerateVideoSubtitle(subtitle);
     }
 }

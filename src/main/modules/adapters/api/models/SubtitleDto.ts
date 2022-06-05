@@ -15,4 +15,8 @@ export class SubtitleDto {
             null
         );
     }
+
+    loggingIdentifier() {
+        return `${this.videoSlug} (${this.language})`;
+    }
 }

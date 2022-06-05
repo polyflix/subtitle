@@ -65,39 +65,40 @@ export class SubtitleGenerationService {
         await this.textToSpeechProvider.cleanUp(subtitle);
     }
 
-    async generateVideoSubtitles(subtitleDto: SubtitleDto) {
+    async registerSubtitleGenerationRequest(
+        subtitleDto: SubtitleDto
+    ): Promise<void> {
         const { videoSlug, language } = subtitleDto;
-
-        const subtitlesExists = await this.subtitleService.checkSubtitleExists(
+        await this.subtitleService.validateSubtitleDoesNotExist(
             videoSlug,
             language
         );
-        if (subtitlesExists) {
-            this.logger.warn(
-                `Subtitles already exists ${videoSlug} (${language})`
-            );
-            return new SubtitleAlreadyExists(videoSlug, language);
-        }
 
-        const subtitle = await this.subtitleService.createSubtitle(subtitleDto);
+        await this.subtitleService.createSubtitle(subtitleDto);
+    }
 
+    private async generateVideoSubtitles(subtitle: Subtitle) {
+        await this.subtitleService.updateSubtitleStatus(
+            subtitle,
+            SubtitleStatus.PROCESSING
+        );
+
+        await this.storageProvider.downloadLocalVideo(subtitle);
+
+        await this.videoToAudio(subtitle);
+
+        await this.textToSpeechProvider.uploadAudioFile(subtitle);
+        await this.textToSpeechProvider.runSubtitleProcessing(subtitle);
+        await this.storageProvider.uploadVTT(subtitle);
+
+        subtitle.vttUrl = subtitle.getVttFileName();
+        subtitle.status = SubtitleStatus.COMPLETED;
+        await this.subtitleService.updateSubtitle(subtitle);
+    }
+
+    async tryGenerateVideoSubtitle(subtitle: Subtitle) {
         try {
-            await this.subtitleService.updateSubtitleStatus(
-                subtitle,
-                SubtitleStatus.PROCESSING
-            );
-
-            await this.storageProvider.downloadLocalVideo(subtitle);
-
-            await this.videoToAudio(subtitle);
-
-            await this.textToSpeechProvider.uploadAudioFile(subtitle);
-            await this.textToSpeechProvider.runSubtitleProcessing(subtitle);
-            await this.storageProvider.uploadVTT(subtitle);
-
-            subtitle.vttUrl = subtitle.getVttFileName();
-            subtitle.status = SubtitleStatus.COMPLETED;
-            await this.subtitleService.updateSubtitle(subtitle);
+            await this.generateVideoSubtitles(subtitle);
         } catch (error) {
             await this.subtitleService.updateSubtitleStatus(
                 subtitle,
@@ -106,6 +107,27 @@ export class SubtitleGenerationService {
             this.logger.error(error);
         } finally {
             await this.#cleanUp(subtitle);
+        }
+    }
+
+    async tryGenerateVideoSubtitles(subtitles: Subtitle[]) {
+        for (let i = 0; i < subtitles.length; i++) {
+            const subtitle = subtitles[i];
+            this.logger.log(
+                `Running processing for ${subtitle.getLoggingIdentifier()}`
+            );
+
+            this.tryGenerateVideoSubtitle(subtitle)
+                .then(() => {
+                    this.logger.log(
+                        `Subtitle processing for ${subtitle.getLoggingIdentifier()} is done`
+                    );
+                })
+                .catch((err) => {
+                    this.logger.error(
+                        `Subtitlte processing for ${subtitle.getLoggingIdentifier()} failed, reason: ${err}`
+                    );
+                });
         }
     }
 }

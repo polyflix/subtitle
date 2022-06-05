@@ -10,6 +10,7 @@ import { SubtitleLanguage } from "../models/subtitles/SubtitleLanguage";
 import { SubtitleStatus } from "../models/subtitles/SubtitleStatus";
 import { SubtitleDto } from "../../adapters/api/models/SubtitleDto";
 import { Span } from "nestjs-otel";
+import { SubtitleAlreadyExists } from "../errors/SubtitleAlreadyExists";
 
 @Injectable()
 export class SubtitleService {
@@ -89,7 +90,8 @@ export class SubtitleService {
         subtitle.status = subtitleStatus;
         return this.updateSubtitle(subtitle);
     }
-    async checkSubtitleExists(
+
+    private async checkSubtitleExists(
         videoSlug: VideoSlug,
         language: SubtitleLanguage
     ): Promise<boolean> {
@@ -104,5 +106,38 @@ export class SubtitleService {
             );
         };
         return subtitles.findIndex(subtitlePredicate) !== -1;
+    }
+
+    async validateSubtitleDoesNotExist(
+        videoSlug: VideoSlug,
+        language: SubtitleLanguage
+    ): Promise<void> {
+        const subtitlesExists = await this.checkSubtitleExists(
+            videoSlug,
+            language
+        );
+        if (subtitlesExists) {
+            this.logger.warn(
+                `Subtitles already exists ${videoSlug} (${language})`
+            );
+            throw new SubtitleAlreadyExists(videoSlug, language);
+        }
+    }
+
+    async validateSubtitleExists(
+        videoSlug: VideoSlug,
+        language: SubtitleLanguage
+    ): Promise<void> {
+        const subtitleExists = await this.checkSubtitleExists(
+            videoSlug,
+            language
+        );
+
+        if (!subtitleExists) {
+            this.logger.warn(
+                `Subtitles could not be find ${videoSlug} (${language})`
+            );
+            throw new NotFoundException("Subtitle could not be foudn");
+        }
     }
 }
