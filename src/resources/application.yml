@@ -8,6 +8,8 @@ telemetry:
 kafka:
   topics:
     subtitle: polyflix.subtitle
+    minio:
+      video: polyflix.minio.video
   client:
     clientId: subtitle-client
     brokers: localhost:29092
