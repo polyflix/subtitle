@@ -110,10 +110,11 @@ export class KafkaVideoConsumer {
             return;
         }
 
-        if (value.payload.sourceType === "internal") {
+        if (value.payload.sourceType !== "internal") {
             this.logger.log(
                 `Ignoring video creation event as it's not an internal video: ${subtitleDto.loggingIdentifier()}`
             );
+            return
         }
 
         try {
