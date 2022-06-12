@@ -16,6 +16,8 @@ import {
 } from "@opentelemetry/semantic-conventions";
 import { HttpInstrumentation } from "@opentelemetry/instrumentation-http";
 import { ExpressInstrumentation } from "@opentelemetry/instrumentation-express";
+import { KafkaJsInstrumentation } from "opentelemetry-instrumentation-kafkajs";
+import { NestInstrumentation } from "@opentelemetry/instrumentation-nestjs-core";
 
 const LOGGER_CTX = "TracingLoader";
 
@@ -46,7 +48,9 @@ export const configureOTel = (
         instrumentations: [
             new WinstonInstrumentation(),
             new HttpInstrumentation(),
-            new ExpressInstrumentation()
+            new ExpressInstrumentation(),
+            new KafkaJsInstrumentation(),
+            new NestInstrumentation(),
         ],
         textMapPropagator: new CompositePropagator({
             propagators: [

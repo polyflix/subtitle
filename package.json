@@ -59,6 +59,8 @@
     "minio": "^7.0.28",
     "nest-winston": "^1.6.2",
     "nestjs-otel": "^3.0.4",
+    "@opentelemetry/instrumentation-nestjs-core": "^0.28.0",
+    "opentelemetry-instrumentation-kafkajs": "^0.27.1",
     "pg": "^8.7.3",
     "reflect-metadata": "^0.1.13",
     "rimraf": "^3.0.2",
