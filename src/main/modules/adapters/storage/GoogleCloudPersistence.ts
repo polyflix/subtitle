@@ -152,7 +152,8 @@ export class GoogleCloudStoragePersistence extends TextToSpeechProvider {
 
         const audioPath = subtitle.getLocalAudioFileLocation();
         const uploadOption: UploadOptions = {
-            destination: subtitle.getPersistantAudioFileLocation()
+            destination: subtitle.getPersistantAudioFileLocation(),
+            resumable: false
         };
         await this.#upload(audioPath, uploadOption);
     }

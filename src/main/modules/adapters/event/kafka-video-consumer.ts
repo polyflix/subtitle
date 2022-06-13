@@ -114,7 +114,7 @@ export class KafkaVideoConsumer {
             this.logger.log(
                 `Ignoring video creation event as it's not an internal video: ${subtitleDto.loggingIdentifier()}`
             );
-            return
+            return;
         }
 
         try {

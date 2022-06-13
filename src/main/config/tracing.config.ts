@@ -50,7 +50,7 @@ export const configureOTel = (
             new HttpInstrumentation(),
             new ExpressInstrumentation(),
             new KafkaJsInstrumentation(),
-            new NestInstrumentation(),
+            new NestInstrumentation()
         ],
         textMapPropagator: new CompositePropagator({
             propagators: [

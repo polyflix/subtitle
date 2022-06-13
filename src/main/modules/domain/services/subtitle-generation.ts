@@ -117,7 +117,7 @@ export class SubtitleGenerationService {
                 `Running processing for ${subtitle.getLoggingIdentifier()}`
             );
 
-            this.tryGenerateVideoSubtitle(subtitle)
+            await this.tryGenerateVideoSubtitle(subtitle)
                 .then(() => {
                     this.logger.log(
                         `Subtitle processing for ${subtitle.getLoggingIdentifier()} is done`
