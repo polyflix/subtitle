@@ -94,7 +94,7 @@ export class KafkaVideoConsumer {
     }
 
     @EventPattern(KafkaVideoConsumer.VIDEO_TOPIC_CONSUMER)
-    registerSubtitleCreation(@Payload("value") value: PolyflixKafkaValue) {
+    async registerSubtitleCreation(@Payload("value") value: PolyflixKafkaValue) {
         const subtitleDto = new SubtitleDto(
             value.payload.slug,
             value.payload.language ?? SubtitleLanguage.Fr
@@ -118,7 +118,7 @@ export class KafkaVideoConsumer {
         }
 
         try {
-            this.subtitleGenerationService.registerSubtitleGenerationRequest(
+            await this.subtitleGenerationService.registerSubtitleGenerationRequest(
                 subtitleDto
             );
         } catch (e) {
