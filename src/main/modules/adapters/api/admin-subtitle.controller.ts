@@ -22,6 +22,6 @@ export class AdminSubtitleController {
             createDto
         );
         const subtitle = await this.svc.getSubtitle(createDto);
-        await this.subtitleGenerationService.tryGenerateVideoSubtitle(subtitle);
+        this.subtitleGenerationService.tryGenerateVideoSubtitle(subtitle);
     }
 }
